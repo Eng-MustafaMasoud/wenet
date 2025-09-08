@@ -9,7 +9,8 @@ import PWAProvider from "@/components/providers/PWAProvider";
 const inter = Inter({ 
   subsets: ["latin"],
   display: 'swap',
-  variable: '--font-inter'
+  variable: '--font-inter',
+  fallback: ['system-ui', 'arial']
 });
 
 export const metadata: Metadata = {
@@ -36,8 +37,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} font-sans`}>
+    <html lang="en" className={inter.variable}>
+      <body className="font-sans">
         <ReduxProvider>
           <QueryProvider>
             <PWAProvider>{children}</PWAProvider>
