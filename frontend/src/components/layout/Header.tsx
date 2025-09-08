@@ -5,6 +5,7 @@ import { RootState } from '@/store';
 import { logout } from '@/store/slices/authSlice';
 import { Wifi, WifiOff, User, LogOut } from 'lucide-react';
 import { useWebSocket } from '@/hooks/useWebSocket';
+import ClientTime from '@/components/ui/ClientTime';
 
 interface HeaderProps {
   title: string;
@@ -67,11 +68,11 @@ export default function Header({ title, showConnectionStatus = false, gateId }: 
           
           <div className="flex items-center space-x-4">
             <div className="text-sm text-gray-500">
-              {new Date().toLocaleTimeString('en-US', {
+              <ClientTime format={{
                 hour: '2-digit',
                 minute: '2-digit',
                 hour12: true,
-              })}
+              }} />
             </div>
             
             {isAuthenticated && user && (

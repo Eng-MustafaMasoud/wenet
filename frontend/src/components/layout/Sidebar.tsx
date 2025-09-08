@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store";
 import { setSidebarOpen } from "@/store/slices/uiSlice";
+import ClientTime from "@/components/ui/ClientTime";
 import {
   Home,
   Car,
@@ -399,7 +400,7 @@ export default function Sidebar({
           <div className="p-4 border-t border-gray-200">
             <div className="flex items-center space-x-2 text-xs text-gray-500">
               <Clock className="w-3 h-3" />
-              <span>{new Date().toLocaleTimeString()}</span>
+              <ClientTime />
             </div>
           </div>
         )}

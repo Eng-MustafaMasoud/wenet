@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import ClientTime from "@/components/ui/ClientTime";
 import {
   BarChart,
   Bar,
@@ -546,7 +547,7 @@ export default function DashboardOverview() {
             <div>
               <h4 className="text-sm font-medium text-gray-600">Last Update</h4>
               <p className="text-sm font-bold text-gray-900">
-                {new Date().toLocaleTimeString()}
+                <ClientTime />
               </p>
             </div>
             <div className="p-2 bg-gray-100 rounded-full">
