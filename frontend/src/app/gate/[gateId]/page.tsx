@@ -1,133 +1,162 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/store";
+import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
+import { useZones, useGates, useCheckin } from '@/hooks/useApi';
+import { useWebSocket } from '@/hooks/useWebSocket';
+import MainLayout from '@/components/layout/MainLayout';
+import ZoneCard from '@/components/gate/ZoneCard';
+import TicketModal from '@/components/gate/TicketModal';
+import SubscriptionVerification from '@/components/gate/SubscriptionVerification';
+import ClientTime from '@/components/ui/ClientTime';
+import Button from '@/components/ui/Button';
+import Input from '@/components/ui/Input';
 import {
-  setCurrentGate,
-  setZones,
-  setSelectedZone,
-  setCheckinType,
-  setCurrentTicket,
-  clearGateState,
-} from "@/store/slices/gateSlice";
-import { addNotification } from "@/store/slices/uiSlice";
-import { useGates, useZones, useCheckin } from "@/hooks/useApi";
-import { Zone } from "@/types/api";
-import { useWebSocket } from "@/hooks/useWebSocket";
-import MainLayout from "@/components/layout/MainLayout";
-import ZoneCard from "@/components/gate/ZoneCard";
-import TicketModal from "@/components/gate/TicketModal";
-import SubscriptionVerification from "@/components/gate/SubscriptionVerification";
-import Button from "@/components/ui/Button";
-import { Users, UserCheck, AlertCircle } from "lucide-react";
+  Car,
+  Users,
+  Wifi,
+  WifiOff,
+  Clock,
+  AlertCircle,
+  CheckCircle
+} from 'lucide-react';
+
+type TabType = 'visitor' | 'subscriber';
+
+interface Zone {
+  id: string;
+  name: string;
+  categoryId: string;
+  gateIds: string[];
+  totalSlots: number;
+  occupied: number;
+  free: number;
+  reserved: number;
+  availableForVisitors: number;
+  availableForSubscribers: number;
+  rateNormal: number;
+  rateSpecial: number;
+  open: boolean;
+  specialActive?: boolean;
+}
+
+interface Ticket {
+  id: string;
+  type: 'visitor' | 'subscriber';
+  zoneId: string;
+  gateId: string;
+  checkinAt: string;
+}
 
 export default function GatePage() {
   const params = useParams();
-  const gateId = params.gateId as string;
-  const dispatch = useDispatch();
-
-  const {
-    currentGate,
-    zones,
-    selectedZone,
-    checkinType,
-    currentTicket,
-    subscription,
-    subscriptionError,
-  } = useSelector((state: RootState) => state.gate);
-
-  const { connectionState } = useWebSocket(gateId);
+  const gateId = params?.gateId as string;
+  
+  const [activeTab, setActiveTab] = useState<TabType>('visitor');
+  const [selectedZone, setSelectedZone] = useState<string>('');
+  const [subscriptionId, setSubscriptionId] = useState('');
   const [showTicketModal, setShowTicketModal] = useState(false);
-  const [subscriptionId, setSubscriptionId] = useState("");
+  const [currentTicket, setCurrentTicket] = useState<Ticket | null>(null);
+  const [error, setError] = useState<string>('');
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // API hooks
-  const { data: gates, isLoading: gatesLoading } = useGates();
-  const { data: zonesData, isLoading: zonesLoading } = useZones(gateId);
-  const checkinMutation = useCheckin();
+  const { data: gates } = useGates();
+  const { data: zones, isLoading: zonesLoading, refetch: refetchZones } = useZones(gateId);
+  const { mutate: checkin } = useCheckin();
+  const { connectionState } = useWebSocket();
 
-  // Initialize gate and zones data
+  // Find current gate
+  const currentGate = gates?.find(gate => gate.id === gateId);
+
+  // WebSocket subscription for real-time updates
   useEffect(() => {
-    if (gates && !currentGate) {
-      const gate = gates.find((g) => g.id === gateId);
-      if (gate) {
-        dispatch(setCurrentGate(gate));
-      }
+    if (gateId && connectionState === 'open') {
+      // Subscribe to gate updates - this should be handled by useWebSocket hook
+      console.log(`Subscribing to gate updates for ${gateId}`);
     }
-  }, [gates, currentGate, gateId, dispatch]);
+  }, [gateId, connectionState]);
 
-  useEffect(() => {
-    if (zonesData && !zones) {
-      dispatch(setZones(zonesData));
-    }
-  }, [zonesData, zones, dispatch]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      dispatch(clearGateState());
-    };
-  }, [dispatch]);
-
-  const handleZoneSelect = (zone: Zone) => {
-    dispatch(setSelectedZone(zone));
+  const handleZoneSelect = (zoneId: string) => {
+    setSelectedZone(zoneId);
+    setError('');
   };
 
-  const handleCheckinTypeChange = (type: "visitor" | "subscriber") => {
-    dispatch(setCheckinType(type));
-    dispatch(setSelectedZone(null));
-  };
+  const handleVisitorCheckin = () => {
+    if (!selectedZone) {
+      setError('Please select a zone');
+      return;
+    }
 
-  const handleCheckin = async () => {
-    if (!selectedZone) return;
-
-    try {
-      const checkinData = {
+    setIsProcessing(true);
+    checkin(
+      {
         gateId,
-        zoneId: selectedZone.id,
-        type: checkinType,
-        ...(checkinType === "subscriber" &&
-          subscription && { subscriptionId: subscription.id }),
-      };
+        zoneId: selectedZone,
+        type: 'visitor'
+      },
+      {
+        onSuccess: (data) => {
+          setCurrentTicket(data.ticket);
+          setShowTicketModal(true);
+          setSelectedZone('');
+          setError('');
+          setIsProcessing(false);
+          // Refetch zones to get updated availability
+          refetchZones();
+        },
+        onError: (error: unknown) => {
+          const apiError = error as { response?: { data?: { message?: string } } };
+          setError(apiError?.response?.data?.message || 'Check-in failed');
+          setIsProcessing(false);
+        }
+      }
+    );
+  };
 
-      const result = await checkinMutation.mutateAsync(checkinData);
-      dispatch(setCurrentTicket(result.ticket));
-      setShowTicketModal(true);
-
-      dispatch(
-        addNotification({
-          type: "success",
-          message: "Check-in successful!",
-        })
-      );
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error && "response" in error
-          ? (error as any).response?.data?.message || "Check-in failed"
-          : "Check-in failed";
-      dispatch(
-        addNotification({
-          type: "error",
-          message: errorMessage,
-        })
-      );
+  const handleSubscriberCheckin = () => {
+    if (!selectedZone) {
+      setError('Please select a zone');
+      return;
     }
+
+    if (!subscriptionId.trim()) {
+      setError('Please enter a subscription ID');
+      return;
+    }
+
+    setIsProcessing(true);
+    checkin(
+      {
+        gateId,
+        zoneId: selectedZone,
+        type: 'subscriber',
+        subscriptionId: subscriptionId.trim()
+      },
+      {
+        onSuccess: (data) => {
+          setCurrentTicket(data.ticket);
+          setShowTicketModal(true);
+          setSelectedZone('');
+          setSubscriptionId('');
+          setError('');
+          setIsProcessing(false);
+          // Refetch zones to get updated availability
+          refetchZones();
+        },
+        onError: (error: unknown) => {
+          const apiError = error as { response?: { data?: { message?: string } } };
+          setError(apiError?.response?.data?.message || 'Check-in failed');
+          setIsProcessing(false);
+        }
+      }
+    );
   };
 
-  const handleCloseTicketModal = () => {
-    setShowTicketModal(false);
-    dispatch(setCurrentTicket(null));
-    dispatch(setSelectedZone(null));
-  };
 
-  const handleSubscriptionVerify = async (id: string) => {
-    setSubscriptionId(id);
-  };
-
-  if (gatesLoading || zonesLoading) {
+  if (zonesLoading) {
     return (
-      <MainLayout title="Loading..." showConnectionStatus gateId={gateId}>
+      <MainLayout title={`Gate ${gateId} - ParkFlow`}>
         <div className="flex items-center justify-center min-h-screen">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
         </div>
@@ -135,119 +164,194 @@ export default function GatePage() {
     );
   }
 
-  if (!currentGate || !zones) {
-    return (
-      <MainLayout title="Gate Not Found" showConnectionStatus gateId={gateId}>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Gate Not Found
-            </h2>
-            <p className="text-gray-600">
-              The requested gate could not be found.
-            </p>
-          </div>
-        </div>
-      </MainLayout>
-    );
-  }
-
   return (
-    <MainLayout
-      title={`${currentGate.name} - Gate ${gateId}`}
-      showConnectionStatus
-      gateId={gateId}
-    >
+    <MainLayout title={`${currentGate?.name || `Gate ${gateId}`} - ParkFlow`}>
       <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Check-in Type Tabs */}
-          <div className="mb-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="bg-white shadow-sm border-b mb-6">
+            <div className="px-6 py-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">
+                    {currentGate?.name || `Gate ${gateId}`}
+                  </h1>
+                  {currentGate?.location && (
+                    <p className="text-sm text-gray-600 mt-1">{currentGate.location}</p>
+                  )}
+                </div>
+                
+                <div className="flex items-center space-x-6">
+                  {/* Connection Status */}
+                  <div className={`flex items-center space-x-2 px-3 py-2 rounded-full text-sm ${
+                    connectionState === 'open' 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-red-100 text-red-800'
+                  }`}>
+                    {connectionState === 'open' ? (
+                      <Wifi className="h-4 w-4" />
+                    ) : (
+                      <WifiOff className="h-4 w-4" />
+                    )}
+                    <span>{connectionState === 'open' ? 'Connected' : 'Disconnected'}</span>
+                  </div>
+
+                  {/* Current Time */}
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <Clock className="h-4 w-4" />
+                    <ClientTime />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Tab Navigation */}
+          <div className="mb-6">
             <div className="border-b border-gray-200">
               <nav className="-mb-px flex space-x-8">
                 <button
-                  onClick={() => handleCheckinTypeChange("visitor")}
+                  onClick={() => {
+                    setActiveTab('visitor');
+                    setSelectedZone('');
+                    setSubscriptionId('');
+                    setError('');
+                  }}
                   className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                    checkinType === "visitor"
-                      ? "border-blue-500 text-blue-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    activeTab === 'visitor'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
                 >
-                  <Users className="w-4 h-4 inline mr-2" />
-                  Visitor Check-in
+                  <div className="flex items-center space-x-2">
+                    <Car className="h-5 w-5" />
+                    <span>Visitor</span>
+                  </div>
                 </button>
+                
                 <button
-                  onClick={() => handleCheckinTypeChange("subscriber")}
+                  onClick={() => {
+                    setActiveTab('subscriber');
+                    setSelectedZone('');
+                    setSubscriptionId('');
+                    setError('');
+                  }}
                   className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                    checkinType === "subscriber"
-                      ? "border-blue-500 text-blue-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    activeTab === 'subscriber'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
                 >
-                  <UserCheck className="w-4 h-4 inline mr-2" />
-                  Subscriber Check-in
+                  <div className="flex items-center space-x-2">
+                    <Users className="h-5 w-5" />
+                    <span>Subscriber</span>
+                  </div>
                 </button>
               </nav>
             </div>
           </div>
 
-          {/* Subscription Verification for Subscriber Check-in */}
-          {checkinType === "subscriber" && (
-            <div className="mb-8">
-              <SubscriptionVerification
-                onSubscriptionVerified={handleSubscriptionVerify}
-                subscription={subscription}
-                error={subscriptionError}
-              />
+          {/* Error Display */}
+          {error && (
+            <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
+              <div className="flex">
+                <AlertCircle className="h-5 w-5 text-red-400" />
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-red-800">Error</h3>
+                  <p className="text-sm text-red-700 mt-1">{error}</p>
+                </div>
+              </div>
             </div>
           )}
 
-          {/* Zone Selection */}
-          <div className="mb-8">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
-              Select Parking Zone
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {zones.map((zone) => (
-                <ZoneCard
-                  key={zone.id}
-                  zone={zone}
-                  isSelected={selectedZone?.id === zone.id}
-                  onSelect={handleZoneSelect}
-                  checkinType={checkinType}
-                  disabled={checkinType === "subscriber" && !subscription}
+          {/* Subscriber ID Input (only for subscriber tab) */}
+          {activeTab === 'subscriber' && (
+            <div className="mb-6 bg-white p-6 rounded-lg shadow-sm border">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Subscription Verification</h3>
+              <div className="max-w-md">
+                <Input
+                  label="Subscription ID"
+                  placeholder="Enter subscription ID"
+                  value={subscriptionId}
+                  onChange={(e) => setSubscriptionId(e.target.value)}
+                  disabled={isProcessing}
                 />
-              ))}
+              </div>
+              {subscriptionId && (
+                <SubscriptionVerification 
+                  onVerified={(subscriptionId) => {
+                    // Subscription is verified, user can now select zones
+                    console.log('Subscription verified:', subscriptionId);
+                  }}
+                />
+              )}
             </div>
+          )}
+
+          {/* Zone Cards */}
+          <div className="mb-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">
+              Available Zones ({activeTab === 'visitor' ? 'Visitors' : 'Subscribers'})
+            </h3>
+            
+            {zones && zones.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {zones.map((zone) => (
+                  <ZoneCard
+                    key={zone.id}
+                    zone={zone}
+                    isSelected={selectedZone === zone.id}
+                    onSelect={(zone) => handleZoneSelect(zone.id)}
+                    checkinType={activeTab}
+                    disabled={!zone.open || (
+                      activeTab === 'visitor' 
+                        ? zone.availableForVisitors <= 0 
+                        : zone.availableForSubscribers <= 0
+                    )}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Car className="mx-auto h-12 w-12 text-gray-400" />
+                <h3 className="mt-2 text-sm font-medium text-gray-900">No zones available</h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  There are no zones available for {activeTab}s at this gate.
+                </p>
+              </div>
+            )}
           </div>
 
-          {/* Check-in Button */}
+          {/* Action Button */}
           {selectedZone && (
-            <div className="flex justify-center">
-              <Button
-                onClick={handleCheckin}
-                disabled={checkinMutation.isPending}
-                loading={checkinMutation.isPending}
-                size="lg"
-                className="px-8"
-              >
-                {checkinMutation.isPending
-                  ? "Processing..."
-                  : `Check-in to ${selectedZone.name}`}
-              </Button>
-            </div>
-          )}
-
-          {/* Connection Status */}
-          {connectionState !== "connected" && (
-            <div className="fixed bottom-4 right-4 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-2 rounded-md shadow-lg">
-              <div className="flex items-center">
-                <AlertCircle className="w-4 h-4 mr-2" />
-                <span className="text-sm">
-                  {connectionState === "connecting"
-                    ? "Connecting..."
-                    : "Connection lost"}
-                </span>
+            <div className="mb-6">
+              <div className="bg-white p-6 rounded-lg shadow-sm border">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-lg font-medium text-gray-900">Ready to Check In</h4>
+                    <p className="text-sm text-gray-600">
+                      Selected zone: {zones?.find(z => z.id === selectedZone)?.name}
+                    </p>
+                  </div>
+                  
+                  <Button
+                    onClick={activeTab === 'visitor' ? handleVisitorCheckin : handleSubscriberCheckin}
+                    disabled={isProcessing || (activeTab === 'subscriber' && !subscriptionId.trim())}
+                    className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg font-medium"
+                  >
+                    {isProcessing ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                        <span>Processing...</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center space-x-2">
+                        <CheckCircle className="h-5 w-5" />
+                        <span>Check In</span>
+                      </div>
+                    )}
+                  </Button>
+                </div>
               </div>
             </div>
           )}
@@ -255,10 +359,13 @@ export default function GatePage() {
           {/* Ticket Modal */}
           <TicketModal
             isOpen={showTicketModal}
-            onClose={handleCloseTicketModal}
             ticket={currentTicket}
-            zone={selectedZone}
-            gate={currentGate}
+            gate={currentGate || null}
+            zone={zones?.find(z => z.id === currentTicket?.zoneId) || null}
+            onClose={() => {
+              setShowTicketModal(false);
+              setCurrentTicket(null);
+            }}
           />
         </div>
       </div>

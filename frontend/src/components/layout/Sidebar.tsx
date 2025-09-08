@@ -20,6 +20,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Activity,
+  UserCheck,
 } from "lucide-react";
 import { classNames } from "@/utils/helpers";
 import { useWebSocket } from "@/hooks/useWebSocket";
@@ -119,6 +120,20 @@ const navigationItems: NavItem[] = [
         label: "Categories",
         href: "/admin?tab=categories",
         icon: Settings,
+        roles: ["admin"],
+      },
+      {
+        id: "admin-employees",
+        label: "Employees",
+        href: "/admin?tab=employees",
+        icon: UserCheck,
+        roles: ["admin"],
+      },
+      {
+        id: "admin-parking-state",
+        label: "Parking State",
+        href: "/admin?tab=parking-state",
+        icon: Activity,
         roles: ["admin"],
       },
     ],

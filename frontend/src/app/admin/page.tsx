@@ -18,6 +18,7 @@ import RealtimeMonitoring from "@/components/admin/RealtimeMonitoring";
 import ParkingStateReport from "@/components/admin/ParkingStateReport";
 import ZoneControl from "@/components/admin/ZoneControl";
 import CategoryManagement from "@/components/admin/CategoryManagement";
+import EmployeeManagement from "@/components/admin/EmployeeManagement";
 import {
   BarChart3,
   Users,
@@ -41,7 +42,7 @@ export default function AdminDashboard() {
   // Handle URL tab parameter
   useEffect(() => {
     const tab = searchParams.get("tab");
-    if (tab && ["overview", "revenue", "subscriptions", "monitoring", "zones", "categories", "gates"].includes(tab)) {
+    if (tab && ["overview", "revenue", "subscriptions", "monitoring", "zones", "categories", "gates", "employees", "parking-state"].includes(tab)) {
       setActiveTab(tab);
     } else {
       // Default to overview if no tab specified
@@ -63,6 +64,8 @@ export default function AdminDashboard() {
     { id: "zones", name: "Zones", icon: Car },
     { id: "categories", name: "Categories", icon: Settings },
     { id: "gates", name: "Gates", icon: Users },
+    { id: "employees", name: "Employees", icon: UserCheck },
+    { id: "parking-state", name: "Parking State", icon: Activity },
   ];
 
   if (parkingLoading || zonesLoading || categoriesLoading || gatesLoading) {
@@ -120,7 +123,7 @@ export default function AdminDashboard() {
               {activeTab === "revenue" && <RevenueAnalytics />}
               {activeTab === "subscriptions" && <SubscriptionAnalytics />}
               {activeTab === "monitoring" && <RealtimeMonitoring />}
-              {activeTab === "zones" && <ParkingStateReport />}
+              {activeTab === "zones" && <ZoneControl />}
               {activeTab === "categories" && <CategoryManagement />}
               {activeTab === "gates" && (
                 <div className="text-center py-8">
@@ -133,6 +136,8 @@ export default function AdminDashboard() {
                   </p>
                 </div>
               )}
+              {activeTab === "employees" && <EmployeeManagement />}
+              {activeTab === "parking-state" && <ParkingStateReport />}
             </div>
           </div>
         </div>
