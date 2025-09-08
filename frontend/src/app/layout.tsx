@@ -6,11 +6,11 @@ import ReduxProvider from "@/components/providers/ReduxProvider";
 import QueryProvider from "@/components/providers/QueryProvider";
 import PWAProvider from "@/components/providers/PWAProvider";
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ["latin"],
-  display: 'swap',
-  variable: '--font-inter',
-  fallback: ['system-ui', 'arial']
+  display: "swap",
+  variable: "--font-inter",
+  fallback: ["system-ui", "arial"],
 });
 
 export const metadata: Metadata = {
