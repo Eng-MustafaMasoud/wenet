@@ -21,6 +21,8 @@ import {
   ChevronRight,
   Activity,
   UserCheck,
+  MapPin,
+  DollarSign,
 } from "lucide-react";
 import { classNames } from "@/utils/helpers";
 import { useWebSocket } from "@/hooks/useWebSocket";
@@ -37,19 +39,19 @@ interface NavItem {
 
 const navigationItems: NavItem[] = [
   {
-    id: "dashboard",
-    label: "Dashboard",
-    href: "/",
-    icon: Home,
-    roles: ["admin", "employee", "visitor"],
-  },
-  {
     id: "gates",
     label: "Gates",
     href: "/gates",
     icon: Car,
     roles: ["admin", "employee", "visitor"],
     children: [
+      {
+        id: "gates-overview",
+        label: "All Gates",
+        href: "/gates",
+        icon: Home,
+        roles: ["admin", "employee", "visitor"],
+      },
       {
         id: "gate-1",
         label: "Main Entrance",
@@ -62,6 +64,36 @@ const navigationItems: NavItem[] = [
         label: "Secondary Gate",
         href: "/gate/gate_2",
         icon: Car,
+        roles: ["admin", "employee", "visitor"],
+      },
+    ],
+  },
+  {
+    id: "zones",
+    label: "Zones",
+    href: "/zones",
+    icon: MapPin,
+    roles: ["admin", "employee", "visitor"],
+    children: [
+      {
+        id: "zones-overview",
+        label: "All Zones",
+        href: "/zones",
+        icon: Home,
+        roles: ["admin", "employee", "visitor"],
+      },
+      {
+        id: "zones-availability",
+        label: "Availability",
+        href: "/zones/availability",
+        icon: Activity,
+        roles: ["admin", "employee", "visitor"],
+      },
+      {
+        id: "zones-pricing",
+        label: "Pricing",
+        href: "/zones/pricing",
+        icon: DollarSign,
         roles: ["admin", "employee", "visitor"],
       },
     ],
