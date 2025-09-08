@@ -7,8 +7,8 @@ export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect to gates page as the main entry point
-    router.replace('/gates');
+    // Redirect to dashboard page as the main entry point
+    router.replace('/dashboard');
   }, [router]);
 
   return (

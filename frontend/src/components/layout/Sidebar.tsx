@@ -39,6 +39,13 @@ interface NavItem {
 
 const navigationItems: NavItem[] = [
   {
+    id: "dashboard",
+    label: "Dashboard",
+    href: "/dashboard",
+    icon: Home,
+    roles: ["admin", "employee", "visitor"],
+  },
+  {
     id: "gates",
     label: "Gates",
     href: "/gates",
