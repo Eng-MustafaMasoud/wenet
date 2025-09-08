@@ -1,22 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { useTicket, useCheckout, useSubscription } from "@/hooks/useApi";
+import { useTicket, useCheckout } from "@/hooks/useApi";
 import MainLayout from "@/components/layout/MainLayout";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import CheckoutPanel from "@/components/checkpoint/CheckoutPanel";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import ClientTime from "@/components/ui/ClientTime";
 import {
   Scan,
   Clock,
-  Car,
-  User,
-  DollarSign,
   AlertCircle,
   CheckCircle,
   Receipt,
@@ -43,7 +38,6 @@ interface CheckoutResult {
 }
 
 export default function CheckpointPage() {
-  const router = useRouter();
   const { user } = useSelector((state: RootState) => state.auth);
 
   const [ticketId, setTicketId] = useState("");
@@ -107,7 +101,7 @@ export default function CheckpointPage() {
           },
         }
       );
-    } catch (err) {
+    } catch {
       setError("Failed to process ticket");
       setIsProcessing(false);
     }
