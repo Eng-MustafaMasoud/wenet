@@ -416,14 +416,7 @@ export default function RealtimeMonitoring() {
                   formatter={(value) => [`${value}%`, "Occupancy"]}
                   labelFormatter={(label) => `Zone: ${label}`}
                 />
-                <Bar
-                  dataKey="occupancyRate"
-                  fill={(entry) => {
-                    if (entry.occupancyRate > 90) return "#EF4444";
-                    if (entry.occupancyRate > 70) return "#F59E0B";
-                    return "#10B981";
-                  }}
-                />
+                <Bar dataKey="occupancyRate" fill="#3B82F6" />
               </BarChart>
             </ResponsiveContainer>
           </div>

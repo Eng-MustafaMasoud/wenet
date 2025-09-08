@@ -188,7 +188,8 @@ class OptimizedWebSocketService {
     this.stopHeartbeat();
     this.heartbeatInterval = setInterval(() => {
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-        this.ws.ping();
+        // Send a ping message instead of using unsupported ping() method
+        this.ws.send(JSON.stringify({ type: "ping" }));
       }
     }, this.config.heartbeatInterval);
   }

@@ -1,33 +1,43 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useSubscription } from '@/hooks/useApi';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/store';
-import { setSubscription, setSubscriptionError } from '@/store/slices/gateSlice';
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
-import { Search, AlertCircle, CheckCircle, Car } from 'lucide-react';
-import { formatDate } from '@/utils/helpers';
+import { useState, useEffect } from "react";
+import { useSubscription } from "@/hooks/useApi";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store";
+import {
+  setSubscription,
+  setSubscriptionError,
+} from "@/store/slices/gateSlice";
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
+import { Search, AlertCircle, CheckCircle, Car } from "lucide-react";
+import { formatDate } from "@/utils/helpers";
 
 interface SubscriptionVerificationProps {
   onVerified: (subscriptionId: string) => void;
 }
 
-export default function SubscriptionVerification({ onVerified }: SubscriptionVerificationProps) {
+export default function SubscriptionVerification({
+  onVerified,
+}: SubscriptionVerificationProps) {
   const dispatch = useDispatch();
-  const { subscriptionId, subscription, subscriptionError } = useSelector((state: RootState) => state.gate);
-  
+  const { subscriptionId, subscription, subscriptionError } = useSelector(
+    (state: RootState) => state.gate
+  );
+
   const [inputValue, setInputValue] = useState(subscriptionId);
   const [isVerifying, setIsVerifying] = useState(false);
 
-  const { data: subscriptionData, isLoading, error } = useSubscription(subscriptionId);
+  const {
+    data: subscriptionData,
+    isLoading,
+    error,
+  } = useSubscription(subscriptionId);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setInputValue(value);
-    dispatch(setSubscriptionId(value));
-    
+
     // Clear previous errors when user types
     if (subscriptionError) {
       dispatch(setSubscriptionError(null));
@@ -36,13 +46,12 @@ export default function SubscriptionVerification({ onVerified }: SubscriptionVer
 
   const handleVerify = async () => {
     if (!inputValue.trim()) {
-      dispatch(setSubscriptionError('Please enter a subscription ID'));
+      dispatch(setSubscriptionError("Please enter a subscription ID"));
       return;
     }
 
     setIsVerifying(true);
-    dispatch(setSubscriptionId(inputValue.trim()));
-    
+
     // The useSubscription hook will handle the API call
     // We'll handle the result in useEffect below
   };
@@ -56,13 +65,13 @@ export default function SubscriptionVerification({ onVerified }: SubscriptionVer
         onVerified(subscriptionId);
       } else {
         dispatch(setSubscription(null));
-        dispatch(setSubscriptionError('Subscription is not active'));
+        dispatch(setSubscriptionError("Subscription is not active"));
       }
     } else if (error) {
       dispatch(setSubscription(null));
-      dispatch(setSubscriptionError('Subscription not found or invalid'));
+      dispatch(setSubscriptionError("Subscription not found or invalid"));
     }
-    
+
     setIsVerifying(false);
   }, [subscriptionData, error, subscriptionId, dispatch, onVerified]);
 
@@ -86,7 +95,9 @@ export default function SubscriptionVerification({ onVerified }: SubscriptionVer
           value={inputValue}
           onChange={handleInputChange}
           placeholder="Enter subscription ID"
-          error={hasError ? (subscriptionError || 'Subscription not found') : undefined}
+          error={
+            hasError ? subscriptionError || "Subscription not found" : undefined
+          }
           className="flex-1"
         />
         <Button
@@ -120,20 +131,29 @@ export default function SubscriptionVerification({ onVerified }: SubscriptionVer
                 </div>
                 <div className="flex justify-between">
                   <span>Valid Until:</span>
-                  <span className="font-medium">{formatDate(subscription.expiresAt)}</span>
+                  <span className="font-medium">
+                    {formatDate(subscription.expiresAt)}
+                  </span>
                 </div>
               </div>
-              
+
               {/* Cars */}
               <div className="mt-3">
-                <p className="text-sm font-medium text-green-800 mb-2">Registered Cars:</p>
+                <p className="text-sm font-medium text-green-800 mb-2">
+                  Registered Cars:
+                </p>
                 <div className="space-y-1">
                   {subscription.cars.map((car, index) => (
-                    <div key={index} className="flex items-center space-x-2 text-sm text-green-700">
+                    <div
+                      key={index}
+                      className="flex items-center space-x-2 text-sm text-green-700"
+                    >
                       <Car className="w-4 h-4" />
                       <span className="font-mono">{car.plate}</span>
                       <span className="text-gray-500">-</span>
-                      <span>{car.brand} {car.model}</span>
+                      <span>
+                        {car.brand} {car.model}
+                      </span>
                       <span className="text-gray-500">({car.color})</span>
                     </div>
                   ))}
@@ -154,7 +174,7 @@ export default function SubscriptionVerification({ onVerified }: SubscriptionVer
                 Verification Failed
               </h4>
               <p className="text-sm text-red-700 mt-1">
-                {subscriptionError || 'Subscription not found or invalid'}
+                {subscriptionError || "Subscription not found or invalid"}
               </p>
             </div>
           </div>

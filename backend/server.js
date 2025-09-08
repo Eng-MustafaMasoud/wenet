@@ -435,6 +435,7 @@ app.get(BASE + '/admin/subscriptions', (req, res) => {
 });
 
 // Start server
-server.listen(PORT, () => {
-  console.log(`Parking backend starter listening on http://localhost:${PORT}${BASE}`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Parking backend starter listening on http://0.0.0.0:${PORT}${BASE}`);
+  console.log(`Also accessible via http://localhost:${PORT}${BASE}`);
 });

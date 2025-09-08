@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useUsers, useCreateUser } from '@/hooks/useApi';
-import Button from '@/components/ui/Button';
-import Input from '@/components/ui/Input';
-import Modal from '@/components/ui/Modal';
+import { useState } from "react";
+import { useUsers, useCreateUser } from "@/hooks/useApi";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
+import Modal from "@/components/ui/Modal";
 import {
   Users,
   Plus,
@@ -14,97 +14,97 @@ import {
   Edit,
   Trash2,
   AlertCircle,
-  CheckCircle
-} from 'lucide-react';
+  CheckCircle,
+} from "lucide-react";
 
 interface User {
   id: string;
   username: string;
-  role: 'admin' | 'employee';
-  createdAt: string;
-  lastLogin?: string;
-  active: boolean;
+  role: "admin" | "employee";
+  name?: string;
+  email?: string;
 }
 
 interface CreateUserForm {
   username: string;
   password: string;
   confirmPassword: string;
-  role: 'admin' | 'employee';
+  role: "admin" | "employee";
 }
 
 export default function EmployeeManagement() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [formData, setFormData] = useState<CreateUserForm>({
-    username: '',
-    password: '',
-    confirmPassword: '',
-    role: 'employee'
+    username: "",
+    password: "",
+    confirmPassword: "",
+    role: "employee",
   });
-  const [formError, setFormError] = useState('');
+  const [formError, setFormError] = useState("");
 
   // API hooks
   const { data: users, isLoading, refetch } = useUsers();
   const { mutate: createUser, isPending: isCreating } = useCreateUser();
 
   const handleCreateUser = () => {
-    setFormError('');
+    setFormError("");
 
     // Validation
     if (!formData.username.trim()) {
-      setFormError('Username is required');
+      setFormError("Username is required");
       return;
     }
 
     if (formData.password.length < 6) {
-      setFormError('Password must be at least 6 characters');
+      setFormError("Password must be at least 6 characters");
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setFormError('Passwords do not match');
+      setFormError("Passwords do not match");
       return;
     }
 
     // Check if username already exists
-    if (users?.some(user => user.username === formData.username.trim())) {
-      setFormError('Username already exists');
+    if (users?.some((user) => user.username === formData.username.trim())) {
+      setFormError("Username already exists");
       return;
     }
 
     createUser(
       {
         username: formData.username.trim(),
-        password: formData.password,
-        role: formData.role
+        role: formData.role,
       },
       {
         onSuccess: () => {
           setShowCreateModal(false);
           setFormData({
-            username: '',
-            password: '',
-            confirmPassword: '',
-            role: 'employee'
+            username: "",
+            password: "",
+            confirmPassword: "",
+            role: "employee",
           });
-          setFormError('');
+          setFormError("");
           refetch();
         },
         onError: (error: any) => {
-          setFormError(error.response?.data?.message || 'Failed to create user');
-        }
+          setFormError(
+            error.response?.data?.message || "Failed to create user"
+          );
+        },
       }
     );
   };
 
   const resetForm = () => {
     setFormData({
-      username: '',
-      password: '',
-      confirmPassword: '',
-      role: 'employee'
+      username: "",
+      password: "",
+      confirmPassword: "",
+      role: "employee",
     });
-    setFormError('');
+    setFormError("");
   };
 
   if (isLoading) {
@@ -120,12 +120,14 @@ export default function EmployeeManagement() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Employee Management</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Employee Management
+          </h2>
           <p className="text-gray-600 mt-1">
             Manage system users and their access permissions
           </p>
         </div>
-        
+
         <Button
           onClick={() => setShowCreateModal(true)}
           className="bg-blue-600 hover:bg-blue-700 text-white"
@@ -140,7 +142,7 @@ export default function EmployeeManagement() {
         <div className="px-6 py-4 border-b border-gray-200">
           <h3 className="text-lg font-medium text-gray-900">System Users</h3>
         </div>
-        
+
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -188,44 +190,33 @@ export default function EmployeeManagement() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        {user.role === 'admin' ? (
+                        {user.role === "admin" ? (
                           <Shield className="h-4 w-4 text-red-600 mr-2" />
                         ) : (
                           <Users className="h-4 w-4 text-blue-600 mr-2" />
                         )}
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          user.role === 'admin'
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-blue-100 text-blue-800'
-                        }`}>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            user.role === "admin"
+                              ? "bg-red-100 text-red-800"
+                              : "bg-blue-100 text-blue-800"
+                          }`}
+                        >
                           {user.role}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        user.active
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}>
-                        {user.active ? (
-                          <>
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Active
-                          </>
-                        ) : (
-                          <>
-                            <AlertCircle className="h-3 w-3 mr-1" />
-                            Inactive
-                          </>
-                        )}
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        Active
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {new Date(user.createdAt).toLocaleDateString()}
+                      —
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}
+                      —
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center space-x-2">
@@ -246,7 +237,9 @@ export default function EmployeeManagement() {
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center">
                     <Users className="mx-auto h-12 w-12 text-gray-400" />
-                    <h3 className="mt-2 text-sm font-medium text-gray-900">No users found</h3>
+                    <h3 className="mt-2 text-sm font-medium text-gray-900">
+                      No users found
+                    </h3>
                     <p className="mt-1 text-sm text-gray-500">
                       Get started by creating a new user account.
                     </p>
@@ -272,7 +265,9 @@ export default function EmployeeManagement() {
             label="Username"
             placeholder="Enter username"
             value={formData.username}
-            onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, username: e.target.value }))
+            }
             disabled={isCreating}
             required
           />
@@ -283,7 +278,12 @@ export default function EmployeeManagement() {
             </label>
             <select
               value={formData.role}
-              onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value as 'admin' | 'employee' }))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  role: e.target.value as "admin" | "employee",
+                }))
+              }
               disabled={isCreating}
               className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
@@ -297,7 +297,9 @@ export default function EmployeeManagement() {
             type="password"
             placeholder="Enter password"
             value={formData.password}
-            onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, password: e.target.value }))
+            }
             disabled={isCreating}
             required
             helperText="Minimum 6 characters"
@@ -308,7 +310,12 @@ export default function EmployeeManagement() {
             type="password"
             placeholder="Confirm password"
             value={formData.confirmPassword}
-            onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                confirmPassword: e.target.value,
+              }))
+            }
             disabled={isCreating}
             required
           />
@@ -346,7 +353,7 @@ export default function EmployeeManagement() {
                   Creating...
                 </div>
               ) : (
-                'Create User'
+                "Create User"
               )}
             </Button>
           </div>

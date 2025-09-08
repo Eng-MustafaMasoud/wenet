@@ -1,5 +1,7 @@
-import Link from 'next/link';
-import { Home, ArrowLeft } from 'lucide-react';
+"use client";
+
+import Link from "next/link";
+import { Home, ArrowLeft } from "lucide-react";
 
 export default function NotFound() {
   return (
@@ -14,7 +16,7 @@ export default function NotFound() {
             Sorry, we couldn't find the page you're looking for.
           </p>
         </div>
-        
+
         <div className="mt-8 space-y-4">
           <Link
             href="/"
@@ -23,7 +25,7 @@ export default function NotFound() {
             <Home className="h-4 w-4 mr-2" />
             Go back home
           </Link>
-          
+
           <button
             onClick={() => window.history.back()}
             className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
@@ -32,7 +34,7 @@ export default function NotFound() {
             Go back
           </button>
         </div>
-        
+
         <div className="mt-8 text-xs text-gray-500">
           If you believe this is an error, please contact support.
         </div>

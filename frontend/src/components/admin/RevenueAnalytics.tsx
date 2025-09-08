@@ -267,7 +267,10 @@ export default function RevenueAnalytics() {
                 <XAxis dataKey="date" />
                 <YAxis />
                 <Tooltip
-                  formatter={(value) => [`$${value.toFixed(2)}`, "Revenue"]}
+                  formatter={(value) => [
+                    `$${Number(value).toFixed(2)}`,
+                    "Revenue",
+                  ]}
                   labelFormatter={(label) => `Date: ${label}`}
                 />
                 <Area
@@ -310,7 +313,10 @@ export default function RevenueAnalytics() {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value) => [`$${value.toFixed(2)}`, "Revenue"]}
+                  formatter={(value) => [
+                    `$${Number(value).toFixed(2)}`,
+                    "Revenue",
+                  ]}
                 />
                 <Legend />
               </PieChart>

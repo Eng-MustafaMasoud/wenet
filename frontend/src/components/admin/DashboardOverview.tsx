@@ -501,7 +501,12 @@ export default function DashboardOverview() {
                     {zone.free} / {zone.total}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    ${zone.rate || 0}/hr
+                    $
+                    {(() => {
+                      const zoneInfo = zones?.find((z) => z.name === zone.name);
+                      return zoneInfo?.rateNormal ?? 0;
+                    })()}
+                    /hr
                   </td>
                 </tr>
               ))}
