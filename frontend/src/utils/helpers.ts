@@ -103,6 +103,9 @@ export const classNames = (...classes: (string | undefined | null | false)[]): s
   return classes.filter(Boolean).join(' ');
 };
 
+// Alias for classNames - commonly used as 'cn' in modern React projects
+export const cn = classNames;
+
 export const copyToClipboard = async (text: string): Promise<boolean> => {
   try {
     await navigator.clipboard.writeText(text);
