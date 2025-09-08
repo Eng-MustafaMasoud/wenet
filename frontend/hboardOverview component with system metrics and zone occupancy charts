@@ -1,0 +1,406 @@
+[1mdiff --git a/next.config.js b/next.config.js[m
+[1mindex 621a7fc..ed70e2d 100644[m
+[1m--- a/next.config.js[m
+[1m+++ b/next.config.js[m
+[36m@@ -2,9 +2,9 @@[m
+ const nextConfig = {[m
+   turbopack: {[m
+     rules: {[m
+[31m-      '*.svg': {[m
+[31m-        loaders: ['@svgr/webpack'],[m
+[31m-        as: '*.js',[m
+[32m+[m[32m      "*.svg": {[m
+[32m+[m[32m        loaders: ["@svgr/webpack"],[m
+[32m+[m[32m        as: "*.js",[m
+       },[m
+     },[m
+   },[m
+[36m@@ -12,8 +12,8 @@[m [mconst nextConfig = {[m
+   async rewrites() {[m
+     return [[m
+       {[m
+[31m-        source: '/api/:path*',[m
+[31m-        destination: 'http://localhost:3000/api/:path*',[m
+[32m+[m[32m        source: "/api/:path*",[m
+[32m+[m[32m        destination: "http://localhost:3000/api/:path*",[m
+       },[m
+     ];[m
+   },[m
+[1mdiff --git a/package-lock.json b/package-lock.json[m
+[1mindex 1c634e7..311c311 100644[m
+[1m--- a/package-lock.json[m
+[1m+++ b/package-lock.json[m
+[36m@@ -19,6 +19,7 @@[m
+         "react": "19.1.0",[m
+         "react-dom": "19.1.0",[m
+         "react-redux": "^9.2.0",[m
+[32m+[m[32m        "recharts": "^3.1.2",[m
+         "socket.io-client": "^4.8.1",[m
+         "yup": "^1.7.0"[m
+       },[m
+[36m@@ -1279,6 +1280,60 @@[m
+         "tslib": "^2.4.0"[m
+       }[m
+     },[m
+[32m+[m[32m    "node_modules/@types/d3-array": {[m
+[32m+[m[32m      "version": "3.2.1",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@types/d3-array/-/d3-array-3.2.1.tgz",[m
+[32m+[m[32m      "integrity": "sha512-Y2Jn2idRrLzUfAKV2LyRImR+y4oa2AntrgID95SHJxuMUrkNXmanDSed71sRNZysveJVt1hLLemQZIady0FpEg=="[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "node_modules/@types/d3-color": {[m
+[32m+[m[32m      "version": "3.1.3",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@types/d3-color/-/d3-color-3.1.3.tgz",[m
+[32m+[m[32m      "integrity": "sha512-iO90scth9WAbmgv7ogoq57O9YpKmFBbmoEoCHDB2xMBY0+/KVrqAaCDyCE16dUspeOvIxFFRI+0sEtqDqy2b4A=="[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "node_modules/@types/d3-ease": {[m
+[32m+[m[32m      "version": "3.0.2",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@types/d3-ease/-/d3-ease-3.0.2.tgz",[m
+[32m+[m[32m      "integrity": "sha512-NcV1JjO5oDzoK26oMzbILE6HW7uVXOHLQvHshBUW4UMdZGfiY6v5BeQwh9a9tCzv+CeefZQHJt5SRgK154RtiA=="[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "node_modules/@types/d3-interpolate": {[m
+[32m+[m[32m      "version": "3.0.4",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@types/d3-interpolate/-/d3-interpolate-3.0.4.tgz",[m
+[32m+[m[32m      "integrity": "sha512-mgLPETlrpVV1YRJIglr4Ez47g7Yxjl1lj7YKsiMCb27VJH9W8NVM6Bb9d8kkpG/uAQS5AmbA48q2IAolKKo1MA==",[m
+[32m+[m[32m      "dependencies": {[m
+[32m+[m[32m        "@types/d3-color": "*"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "node_modules/@types/d3-path": {[m
+[32m+[m[32m      "version": "3.1.1",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@types/d3-path/-/d3-path-3.1.1.tgz",[m
+[32m+[m[32m      "integrity": "sha512-VMZBYyQvbGmWyWVea0EHs/BwLgxc+MKi1zLDCONksozI4YJMcTt8ZEuIR4Sb1MMTE8MMW49v0IwI5+b7RmfWlg=="[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "node_modules/@types/d3-scale": {[m
+[32m+[m[32m      "version": "4.0.9",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@types/d3-scale/-/d3-scale-4.0.9.tgz",[m
+[32m+[m[32m      "integrity": "sha512-dLmtwB8zkAeO/juAMfnV+sItKjlsw2lKdZVVy6LRr0cBmegxSABiLEpGVmSJJ8O08i4+sGR6qQtb6WtuwJdvVw==",[m
+[32m+[m[32m      "dependencies": {[m
+[32m+[m[32m        "@types/d3-time": "*"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "node_modules/@types/d3-shape": {[m
+[32m+[m[32m      "version": "3.1.7",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@types/d3-shape/-/d3-shape-3.1.7.tgz",[m
+[32m+[m[32m      "integrity": "sha512-VLvUQ33C+3J+8p+Daf+nYSOsjB4GXp19/S/aGo60m9h1v6XaxjiT82lKVWJCfzhtuZ3yD7i/TPeC/fuKLLOSmg==",[m
+[32m+[m[32m      "dependencies": {[m
+[32m+[m[32m        "@types/d3-path": "*"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "node_modules/@types/d3-time": {[m
+[32m+[m[32m      "version": "3.0.4",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@types/d3-time/-/d3-time-3.0.4.tgz",[m
+[32m+[m[32m      "integrity": "sha512-yuzZug1nkAAaBlBBikKZTgzCeA+k1uy4ZFwWANOfKw5z5LRhV0gNA7gNkKm7HoK+HRN0wX3EkxGk0fpbWhmB7g=="[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "node_modules/@types/d3-timer": {[m
+[32m+[m[32m      "version": "3.0.2",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@types/d3-timer/-/d3-timer-3.0.2.tgz",[m
+[32m+[m[32m      "integrity": "sha512-Ps3T8E8dZDam6fUyNiMkekK3XUsaUEik+idO9/YjPtfj2qruF8tFBXS7XhtE4iIXBLxhmLjP3SXpLhVf21I9Lw=="[m
+[32m+[m[32m    },[m
+     "node_modules/@types/estree": {[m
+       "version": "1.0.8",[m
+       "resolved": "https://registry.npmjs.org/@types/estree/-/estree-1.0.8.tgz",[m
+[36m@@ -2295,6 +2350,14 @@[m
+       "resolved": "https://registry.npmjs.org/client-only/-/client-only-0.0.1.tgz",[m
+       "integrity": "sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA=="[m
+     },[m
+[32m+[m[32m    "node_modules/clsx": {[m
+[32m+[m[32m      "version": "2.1.1",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/clsx/-/clsx-2.1.1.tgz",[m
+[32m+[m[32m      "integrity": "sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==",[m
+[32m+[m[32m      "engines": {[m
+[32m+[m[32m        "node": ">=6"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+     "node_modules/color": {[m
+       "version": "4.2.3",[m
+       "resolved": "https://registry.npmjs.org/color/-/color-4.2.3.tgz",[m
+[36m@@ -2372,6 +2435,116 @@[m
+       "resolved": "https://registry.npmjs.org/csstype/-/csstype-3.1.3.tgz",[m
+       "integrity": "sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw=="[m
+     },[m
+[32m+[m[32m    "node_modules/d3-array": {[m
+[32m+[m[32m      "version": "3.2.4",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/d3-array/-/d3-array-3.2.4.tgz",[m
+[32m+[m[32m      "integrity": "sha512-tdQAmyA18i4J7wprpYq8ClcxZy3SC31QMeByyCFyRt7BVHdREQZ5lpzoe5mFEYZUWe+oq8HBvk9JjpibyEV4Jg==",[m
+[32m+[m[32m      "dependencies": {[m
+[32m+[m[32m        "internmap": "1 - 2"[m
+[32m+[m[32m      },[m
+[32m+[m[32m      "engines": {[m
+[32m+[m[32m        "node": ">=12"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "node_modules/d3-color": {[m
+[32m+[m[32m      "version": "3.1.0",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/d3-color/-/d3-color-3.1.0.tgz",[m
+[32m+[m[32m      "integrity": "sha512-zg/chbXyeBtMQ1LbD/WSoW2DpC3I0mpmPdW+ynRTj/x2DAWYrIY7qeZIHidozwV24m4iavr15lNwIwLxRmOxhA==",[m
+[32m+[m[32m      "engines": {[m
+[32m+[m[32m        "node": ">=12"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "node_modules/d3-ease": {[m
+[32m+[m[32m      "version": "3.0.1",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/d3-ease/-/d3-ease-3.0.1.tgz",[m
+[32m+[m[32m      "integrity": "sha512-wR/XK3D3XcLIZwpbvQwQ5fK+8Ykds1ip7A2Txe0yxncXSdq1L9skcG7blcedkOX+ZcgxGAmLX1FrRGbADwzi0w==",[m
+[32m+[m[32m      "engines": {[m
+[32m+[m[32m        "node": ">=12"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "node_modules/d3-format": {[m
+[32m+[m[32m      "version": "3.1.0",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/d3-format/-/d3-format-3.1.0.tgz",[m
+[32m+[m[32m      "integrity": "sha512-YyUI6AEuY/Wpt8KWLgZHsIU86atmikuoOmCfommt0LYHiQSPjvX2AcFc38PX0CBpr2RCyZhjex+NS/LPOv6YqA==",[m
+[32m+[m[32m      "engines": {[m
+[32m+[m[32m        "node": ">=12"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "node_modules/d3-interpolate": {[m
+[32m+[m[32m      "version": "3.0.1",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/d3-interpolate/-/d3-interpolate-3.0.1.tgz",[m
+[32m+[m[32m      "integrity": "sha512-3bYs1rOD33uo8aqJfKP3JWPAibgw8Zm2+L9vBKEHJ2Rg+viTR7o5Mmv5mZcieN+FRYaAOWX5SJATX6k1PWz72g==",[m
+[32m+[m[32m      "dependencies": {[m
+[32m+[m[32m        "d3-color": "1 - 3"[m
+[32m+[m[32m      },[m
+[32m+[m[32m      "engines": {[m
+[32m+[m[32m        "node": ">=12"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "node_modules/d3-path": {[m
+[32m+[m[32m      "version": "3.1.0",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/d3-path/-/d3-path-3.1.0.tgz",[m
+[32m+[m[32m      "integrity": "sha512-p3KP5HCf/bvjBSSKuXid6Zqijx7wIfNW+J/maPs+iwR35at5JCbLUT0LzF1cnjbCHWhqzQTIN2Jpe8pRebIEFQ==",[m
+[32m+[m[32m      "engines": {[m
+[32m+[m[32m        "node": ">=12"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "node_modules/d3-scale": {[m
+[32m+[m[32m      "version": "4.0.2",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/d3-scale/-/d3-scale-4.0.2.tgz",[m
+[32m+[m[32m      "integrity": "sha512-GZW464g1SH7ag3Y7hXjf8RoUuAFIqklOAq3MRl4OaWabTFJY9PN/E1YklhXLh+OQ3fM9yS2nOkCoS+WLZ6kvxQ==",[m
+[32m+[m[32m      "dependencies": {[m
+[32m+[m[32m        "d3-array": "2.10.0 - 3",[m
+[32m+[m[32m        "d3-format": "1 - 3",[m
+[32m+[m[32m        "d3-interpolate": "1.2.0 - 3",[m
+[32m+[m[32m        "d3-time": "2.1.1 - 3",[m
+[32m+[m[32m        "d3-time-format": "2 - 4"[m
+[32m+[m[32m      },[m
+[32m+[m[32m      "engines": {[m
+[32m+[m[32m        "node": ">=12"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "node_modules/d3-shape": {[m
+[32m+[m[32m      "version": "3.2.0",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/d3-shape/-/d3-shape-3.2.0.tgz",[m
+[32m+[m[32m      "integrity": "sha512-SaLBuwGm3MOViRq2ABk3eLoxwZELpH6zhl3FbAoJ7Vm1gofKx6El1Ib5z23NUEhF9AsGl7y+dzLe5Cw2AArGTA==",[m
+[32m+[m[32m      "dependencies": {[m
+[32m+[m[32m        "d3-path": "^3.1.0"[m
+[32m+[m[32m      },[m
+[32m+[m[32m      "engines": {[m
+[32m+[m[32m        "node": ">=12"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "node_modules/d3-time": {[m
+[32m+[m[32m      "version": "3.1.0",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/d3-time/-/d3-time-3.1.0.tgz",[m
+[32m+[m[32m      "integrity": "sha512-VqKjzBLejbSMT4IgbmVgDjpkYrNWUYJnbCGo874u7MMKIWsILRX+OpX/gTk8MqjpT1A/c6HY2dCA77ZN0lkQ2Q==",[m
+[32m+[m[32m      "dependencies": {[m
+[32m+[m[32m        "d3-array": "2 - 3"[m
+[32m+[m[32m      },[m
+[32m+[m[32m      "engines": {[m
+[32m+[m[32m        "node": ">=12"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "node_modules/d3-time-format": {[m
+[32m+[m[32m      "version": "4.1.0",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/d3-time-format/-/d3-time-format-4.1.0.tgz",[m
+[32m+[m[32m      "integrity": "sha512-dJxPBlzC7NugB2PDLwo9Q8JiTR3M3e4/XANkreKSUxF8vvXKqm1Yfq4Q5dl8budlunRVlUUaDUgFt7eA8D6NLg==",[m
+[32m+[m[32m      "dependencies": {[m
+[32m+[m[32m        "d3-time": "1 - 3"[m
+[32m+[m[32m      },[m
+[32m+[m[32m      "engines": {[m
+[32m+[m[32m        "node": ">=12"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "node_modules/d3-timer": {[m
+[32m+[m[32m      "version": "3.0.1",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/d3-timer/-/d3-timer-3.0.1.tgz",[m
+[32m+[m[32m      "integrity": "sha512-ndfJ/JxxMd3nw31uyKoY2naivF+r29V+Lc0svZxe1JvvIRmi8hUsrMvdOwgS1o6uBHmiz91geQ0ylPP0aj1VUA==",[m
+[32m+[m[32m      "engines": {[m
+[32m+[m[32m        "node": ">=12"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+     "node_modules/damerau-levenshtein": {[m
+       "version": "1.0.8",[m
+       "resolved": "https://registry.npmjs.org/damerau-levenshtein/-/damerau-levenshtein-1.0.8.tgz",[m
+[36m@@ -2446,6 +2619,11 @@[m
+         }[m
+       }[m
+     },[m
+[32m+[m[32m    "node_modules/decimal.js-light": {[m
+[32m+[m[32m      "version": "2.5.1",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/decimal.js-light/-/decimal.js-light-2.5.1.tgz",[m
+[32m+[m[32m      "integrity": "sha512-qIMFpTMZmny+MMIitAB6D7iVPEorVw6YQRWkvarTkT4tBeSLLiHzcwj6q0MmYSFCiVpiqPJTJEYIrpcPzVEIvg=="[m
+[32m+[m[32m    },[m
+     "node_modules/deep-is": {[m
+       "version": "0.1.4",[m
+       "resolved": "https://registry.npmjs.org/deep-is/-/deep-is-0.1.4.tgz",[m
+[36m@@ -2756,6 +2934,15 @@[m
+         "url": "https://github.com/sponsors/ljharb"[m
+       }[m
+     },[m
+[32m+[m[32m    "node_modules/es-toolkit": {[m
+[32m+[m[32m      "version": "1.39.10",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/es-toolkit/-/es-toolkit-1.39.10.tgz",[m
+[32m+[m[32m      "integrity": "sha512-E0iGnTtbDhkeczB0T+mxmoVlT4YNweEKBLq7oaU4p11mecdsZpNWOglI4895Vh4usbQ+LsJiuLuI2L0Vdmfm2w==",[m
+[32m+[m[32m      "workspaces": [[m
+[32m+[m[32m        "docs",[m
+[32m+[m[32m        "benchmarks"[m
+[32m+[m[32m      ][m
+[32m+[m[32m    },[m
+     "node_modules/escape-string-regexp": {[m
+       "version": "4.0.0",[m
+       "resolved": "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-4.0.0.tgz",[m
+[36m@@ -3172,6 +3359,11 @@[m
+         "node": ">=0.10.0"[m
+       }[m
+     },[m
+[32m+[m[32m    "node_modules/eventemitter3": {[m
+[32m+[m[32m      "version": "5.0.1",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/eventemitter3/-/eventemitter3-5.0.1.tgz",[m
+[32m+[m[32m      "integrity": "sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA=="[m
+[32m+[m[32m    },[m
+     "node_modules/fast-deep-equal": {[m
+       "version": "3.1.3",[m
+       "resolved": "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz",[m
+[36m@@ -3672,6 +3864,14 @@[m
+         "node": ">= 0.4"[m
+       }[m
+     },[m
+[32m+[m[32m    "node_modules/internmap": {[m
+[32m+[m[32m      "version": "2.0.3",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/internmap/-/internmap-2.0.3.tgz",[m
+[32m+[m[32m      "integrity": "sha512-5Hh7Y1wQbvY5ooGgPbDaL5iYLAPzMTUrjMulskHLH6wnv/A+1q5rgEaiuqEjB+oxGXIVZs1FF+R/KPN3ZSQYYg==",[m
+[32m+[m[32m      "engines": {[m
+[32m+[m[32m        "node": ">=12"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+     "node_modules/is-array-buffer": {[m
+       "version": "3.0.5",[m
+       "resolved": "https://registry.npmjs.org/is-array-buffer/-/is-array-buffer-3.0.5.tgz",[m
+[36m@@ -5088,6 +5288,32 @@[m
+         }[m
+       }[m
+     },[m
+[32m+[m[32m    "node_modules/recharts": {[m
+[32m+[m[32m      "version": "3.1.2",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/recharts/-/recharts-3.1.2.tgz",[m
+[32m+[m[32m      "integrity": "sha512-vhNbYwaxNbk/IATK0Ki29k3qvTkGqwvCgyQAQ9MavvvBwjvKnMTswdbklJpcOAoMPN/qxF3Lyqob0zO+ZXkZ4g==",[m
+[32m+[m[32m      "dependencies": {[m
+[32m+[m[32m        "@reduxjs/toolkit": "1.x.x || 2.x.x",[m
+[32m+[m[32m        "clsx": "^2.1.1",[m
+[32m+[m[32m        "decimal.js-light": "^2.5.1",[m
+[32m+[m[32m        "es-toolkit": "^1.39.3",[m
+[32m+[m[32m        "eventemitter3": "^5.0.1",[m
+[32m+[m[32m        "immer": "^10.1.1",[m
+[32m+[m[32m        "react-redux": "8.x.x || 9.x.x",[m
+[32m+[m[32m        "reselect": "5.1.1",[m
+[32m+[m[32m        "tiny-invariant": "^1.3.3",[m
+[32m+[m[32m        "use-sync-external-store": "^1.2.2",[m
+[32m+[m[32m        "victory-vendor": "^37.0.2"[m
+[32m+[m[32m      },[m
+[32m+[m[32m      "engines": {[m
+[32m+[m[32m        "node": ">=18"[m
+[32m+[m[32m      },[m
+[32m+[m[32m      "peerDependencies": {[m
+[32m+[m[32m        "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",[m
+[32m+[m[32m        "react-dom": "^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",[m
+[32m+[m[32m        "react-is": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+     "node_modules/redux": {[m
+       "version": "5.0.1",[m
+       "resolved": "https://registry.npmjs.org/redux/-/redux-5.0.1.tgz",[m
+[36m@@ -5778,6 +6004,11 @@[m
+       "resolved": "https://registry.npmjs.org/tiny-case/-/tiny-case-1.0.3.tgz",[m
+       "integrity": "sha512-Eet/eeMhkO6TX8mnUteS9zgPbUMQa4I6Kkp5ORiBD5476/m+PIRiumP5tmh5ioJpH7k51Kehawy2UDfsnxxY8Q=="[m
+     },[m
+[32m+[m[32m    "node_modules/tiny-invariant": {[m
+[32m+[m[32m      "version": "1.3.3",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/tiny-invariant/-/tiny-invariant-1.3.3.tgz",[m
+[32m+[m[32m      "integrity": "sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg=="[m
+[32m+[m[32m    },[m
+     "node_modules/tiny-warning": {[m
+       "version": "1.0.3",[m
+       "resolved": "https://registry.npmjs.org/tiny-warning/-/tiny-warning-1.0.3.tgz",[m
+[36m@@ -6059,6 +6290,27 @@[m
+         "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"[m
+       }[m
+     },[m
+[32m+[m[32m    "node_modules/victory-vendor": {[m
+[32m+[m[32m      "version": "37.3.6",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/victory-vendor/-/victory-vendor-37.3.6.tgz",[m
+[32m+[m[32m      "integrity": "sha512-SbPDPdDBYp+5MJHhBCAyI7wKM3d5ivekigc2Dk2s7pgbZ9wIgIBYGVw4zGHBml/qTFbexrofXW6Gu4noGxrOwQ==",[m
+[32m+[m[32m      "dependencies": {[m
+[32m+[m[32m        "@types/d3-array": "^3.0.3",[m
+[32m+[m[32m        "@types/d3-ease": "^3.0.0",[m
+[32m+[m[32m        "@types/d3-interpolate": "^3.0.1",[m
+[32m+[m[32m        "@types/d3-scale": "^4.0.2",[m
+[32m+[m[32m        "@types/d3-shape": "^3.1.0",[m
+[32m+[m[32m        "@types/d3-time": "^3.0.0",[m
+[32m+[m[32m        "@types/d3-timer": "^3.0.0",[m
+[32m+[m[32m        "d3-array": "^3.1.6",[m
+[32m+[m[32m        "d3-ease": "^3.0.1",[m
+[32m+[m[32m        "d3-interpolate": "^3.0.1",[m
+[32m+[m[32m        "d3-scale": "^4.0.2",[m
+[32m+[m[32m        "d3-shape": "^3.1.0",[m
+[32m+[m[32m        "d3-time": "^3.0.0",[m
+[32m+[m[32m        "d3-timer": "^3.0.1"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+     "node_modules/which": {[m
+       "version": "2.0.2",[m
+       "resolved": "https://registry.npmjs.org/which/-/which-2.0.2.tgz",[m
+[1mdiff --git a/package.json b/package.json[m
+[1mindex c0ba70a..7e3c9c2 100644[m
+[1m--- a/package.json[m
+[1m+++ b/package.json[m
+[36m@@ -23,6 +23,7 @@[m
+     "react": "19.1.0",[m
+     "react-dom": "19.1.0",[m
+     "react-redux": "^9.2.0",[m
+[32m+[m[32m    "recharts": "^3.1.2",[m
+     "socket.io-client": "^4.8.1",[m
+     "yup": "^1.7.0"[m
+   },[m
+[1mdiff --git a/src/app/admin/page.tsx b/src/app/admin/page.tsx[m
+[1mindex f77850b..100ef90 100644[m
+[1m--- a/src/app/admin/page.tsx[m
+[1m+++ b/src/app/admin/page.tsx[m
+[36m@@ -1,36 +1,65 @@[m
+[31m-'use client';[m
+[32m+[m[32m"use client";[m
+ [m
+[31m-import { useState } from 'react';[m
+[31m-import { useSelector } from 'react-redux';[m
+[31m-import { RootState } from '@/store';[m
+[31m-import MainLayout from '@/components/layout/MainLayout';[m
+[31m-import { useParkingState, useAdminZones, useAdminCategories, useAdminGates } from '@/hooks/useApi';[m
+[31m-import { [m
+[31m-  BarChart3, [m
+[31m-  Users, [m
+[31m-  Car, [m
+[31m-  Settings, [m
+[32m+[m[32mimport { useState, useEffect } from "react";[m
+[32m+[m[32mimport { useSearchParams } from "next/navigation";[m
+[32m+[m[32mimport { useSelector } from "react-redux";[m
+[32m+[m[32mimport { RootState } from "@/store";[m
+[32m+[m[32mimport MainLayout from "@/components/layout/MainLayout";[m
+[32m+[m[32mimport {[m
+[32m+[m[32m  useParkingState,[m
+[32m+[m[32m  useAdminZones,[m
+[32m+[m[32m  useAdminCategories,[m
+[32m+[m[32m  useAdminGates,[m
+[32m+[m[32m} from "@/hooks/useApi";[m
+[32m+[m[32mimport DashboardOverview from "@/components/admin/DashboardOverview";[m
+[32m+[m[32mimport RevenueAnalytics from "@/components/admin/RevenueAnalytics";[m
+[32m+[m[32mimport SubscriptionAnalytics from "@/components/admin/SubscriptionAnalytics";[m
+[32m+[m[32mimport RealtimeMonitori
