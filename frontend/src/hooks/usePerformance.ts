@@ -25,7 +25,7 @@ export function useThrottle<T extends (...args: any[]) => any>(
   delay: number
 ): T {
   const lastCall = useRef<number>(0);
-  const lastCallTimer = useRef<NodeJS.Timeout>();
+  const lastCallTimer = useRef<NodeJS.Timeout | undefined>(undefined);
 
   return useCallback(
     ((...args: Parameters<T>) => {
@@ -210,7 +210,7 @@ export function useBatchedState<T>(
 ): [T, (updater: T | ((prev: T) => T)) => void] {
   const [state, setState] = useState(initialState);
   const batchRef = useRef<Array<() => void>>([]);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const batchedSetState = useCallback((updater: T | ((prev: T) => T)) => {
     batchRef.current.push(() => {

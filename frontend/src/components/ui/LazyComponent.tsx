@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  lazy,
-  Suspense,
-  ComponentType,
-  useRef,
-  useEffect,
-  useState,
-} from "react";
+import { lazy, Suspense, ComponentType, useEffect, useState } from "react";
 import { CardSkeleton } from "./SkeletonLoader";
 
 interface LazyComponentProps {
@@ -32,20 +25,21 @@ export function withLazyLoading<T extends object>(
 }
 
 // Pre-configured lazy components for common use cases
-export const LazyChart = withLazyLoading(
-  () => import("@/components/charts/ChartComponent"),
-  <div className="h-80 bg-gray-100 rounded-lg animate-pulse" />
-);
+// TODO: Uncomment when components are created
+// export const LazyChart = withLazyLoading(
+//   () => import("@/components/charts/ChartComponent"),
+//   <div className="h-80 bg-gray-100 rounded-lg animate-pulse" />
+// );
 
-export const LazyTable = withLazyLoading(
-  () => import("@/components/tables/TableComponent"),
-  <div className="h-64 bg-gray-100 rounded-lg animate-pulse" />
-);
+// export const LazyTable = withLazyLoading(
+//   () => import("@/components/tables/TableComponent"),
+//   <div className="h-64 bg-gray-100 rounded-lg animate-pulse" />
+// );
 
-export const LazyForm = withLazyLoading(
-  () => import("@/components/forms/FormComponent"),
-  <div className="h-96 bg-gray-100 rounded-lg animate-pulse" />
-);
+// export const LazyForm = withLazyLoading(
+//   () => import("@/components/forms/FormComponent"),
+//   <div className="h-96 bg-gray-100 rounded-lg animate-pulse" />
+// );
 
 // Hook for lazy loading with intersection observer
 export function useLazyLoad(

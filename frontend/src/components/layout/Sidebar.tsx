@@ -386,7 +386,7 @@ export default function Sidebar({
             {/* Collapse toggle - only on desktop */}
             <button
               onClick={onToggleCollapse}
-              className="hidden lg:flex p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-colors"
+              className="hidden lg:flex p-2 bg-gray-100 rounded-full text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-colors"
               title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
               {isCollapsed ? (

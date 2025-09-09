@@ -228,7 +228,7 @@ function AdminDashboardContent() {
               Current Rush Hours
             </h4>
           </div>
-          <div className="p-6">
+          <div className="">
             {rushHours && rushHours.length > 0 ? (
               <div className="space-y-4">
                 {rushHours.map((rushHour: any) => (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
@@ -8,19 +8,16 @@ import { useAdminGates, useAdminZones, useParkingState } from "@/hooks/useApi";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import MainLayout from "@/components/layout/MainLayout";
 import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
 import { CardSkeleton, ChartSkeleton } from "@/components/ui/SkeletonLoader";
 import {
   Car,
-  MapPin,
   Users,
   Clock,
   Settings,
   ArrowLeft,
   CheckCircle,
   XCircle,
-  AlertTriangle,
   Activity,
   Wifi,
   WifiOff,
@@ -42,7 +39,7 @@ import {
 export default function GateDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const gateId = params.gateId as string;
+  const gateId = params?.gateId as string;
   const { isAuthenticated, user } = useSelector(
     (state: RootState) => state.auth
   );
@@ -190,7 +187,7 @@ export default function GateDetailPage() {
     return (
       <MainLayout title="Gate Details - ParkFlow">
         <div className="min-h-screen bg-gray-50">
-          <div className="max-w-7xl mx-auto p-6">
+          <div className="w-full mx-auto ">
             {/* Header Skeleton */}
             <div className="mb-8">
               <div className="h-8 w-64 bg-gray-200 rounded animate-pulse mb-2" />
@@ -222,6 +219,56 @@ export default function GateDetailPage() {
   }
 
   if (gatesError || !currentGate) {
+    const is404Error = (gatesError as any)?.response?.status === 404;
+
+    if (is404Error) {
+      return (
+        <MainLayout title="Gate Details - ParkFlow">
+          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="text-center max-w-md mx-auto">
+              <div className="bg-yellow-100 rounded-full p-4 w-20 h-20 mx-auto mb-6 flex items-center justify-center">
+                <svg
+                  className="w-12 h-12 text-yellow-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z"
+                  />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                🚧 Under Construction
+              </h2>
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                Gate details page is currently being developed. This feature
+                will be available soon with comprehensive gate information and
+                zone management.
+              </p>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <p className="text-sm text-blue-800">
+                  <strong>Coming Soon:</strong> Detailed gate information,
+                  associated zones, real-time occupancy charts, and management
+                  tools.
+                </p>
+              </div>
+              <Button
+                onClick={() => router.push("/dashboard")}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Dashboard
+              </Button>
+            </div>
+          </div>
+        </MainLayout>
+      );
+    }
+
     return (
       <MainLayout title="Gate Details - ParkFlow">
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">

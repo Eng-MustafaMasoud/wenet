@@ -103,13 +103,6 @@ export default function Navigation({
           <div className="flex justify-between items-center h-16">
             {/* Left side - Menu button and title */}
             <div className="flex items-center">
-              <button
-                onClick={() => dispatch(setSidebarOpen(!sidebarOpen))}
-                className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
-              >
-                <Menu className="h-6 w-6" />
-              </button>
-
               <div className="flex items-center ml-4">
                 <h1 className="text-xl font-semibold text-gray-900 truncate">
                   {title}
@@ -199,7 +192,6 @@ export default function Navigation({
           </div>
         </div>
       </header>
-
 
       {/* Notification Panel */}
       {showNotifications && (

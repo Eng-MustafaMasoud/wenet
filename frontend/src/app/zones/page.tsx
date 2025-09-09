@@ -8,6 +8,9 @@ import {
   useAdminZones,
   useParkingState,
   useAdminCategories,
+  useCreateZone,
+  useUpdateZone,
+  useDeleteZone,
 } from "@/hooks/useApi";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import MainLayout from "@/components/layout/MainLayout";
@@ -78,6 +81,24 @@ export default function ZonesPage() {
     "all" | "open" | "closed" | "full"
   >("all");
 
+  // Modal states
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Form data
+  const [formData, setFormData] = useState({
+    name: "",
+    categoryId: "",
+    gateIds: [] as string[],
+    totalSlots: 0,
+    rateNormal: 0,
+    rateSpecial: 0,
+    open: true,
+  });
+
   // API hooks
   const {
     data: zones,
@@ -91,6 +112,11 @@ export default function ZonesPage() {
     useAdminCategories();
 
   const { connectionState } = useWebSocket();
+
+  // Mutation hooks
+  const { mutate: createZone } = useCreateZone();
+  const { mutate: updateZone } = useUpdateZone();
+  const { mutate: deleteZone } = useDeleteZone();
 
   // Enrich zones with parking state data
   const enrichedZones = useMemo(() => {
@@ -248,8 +274,16 @@ export default function ZonesPage() {
   }, [enrichedZones]);
 
   const handleCreateZone = () => {
-    // TODO: Implement create zone functionality
-    console.log("Create zone");
+    setFormData({
+      name: "",
+      categoryId: "",
+      gateIds: [],
+      totalSlots: 0,
+      rateNormal: 0,
+      rateSpecial: 0,
+      open: true,
+    });
+    setShowCreateModal(true);
   };
 
   const handleViewZone = (zoneId: string) => {
@@ -257,13 +291,100 @@ export default function ZonesPage() {
   };
 
   const handleEditZone = (zone: Zone) => {
-    // TODO: Implement edit zone functionality
-    console.log("Edit zone:", zone.id);
+    setSelectedZone(zone);
+    setFormData({
+      name: zone.name,
+      categoryId: zone.categoryId,
+      gateIds: zone.gateIds,
+      totalSlots: zone.totalSlots,
+      rateNormal: zone.rateNormal,
+      rateSpecial: zone.rateSpecial,
+      open: zone.open,
+    });
+    setShowEditModal(true);
   };
 
   const handleDeleteZone = (zoneId: string) => {
-    // TODO: Implement delete functionality
-    console.log("Delete zone:", zoneId);
+    const zone = enrichedZones.find((z) => z.id === zoneId);
+    if (zone) {
+      setSelectedZone(zone);
+      setShowDeleteModal(true);
+    }
+  };
+
+  const handleSubmitForm = () => {
+    if (
+      !formData.name.trim() ||
+      !formData.categoryId ||
+      formData.totalSlots <= 0
+    ) {
+      alert("Please fill in all required fields");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    if (showCreateModal) {
+      createZone(formData, {
+        onSuccess: () => {
+          setShowCreateModal(false);
+          setIsSubmitting(false);
+          setFormData({
+            name: "",
+            categoryId: "",
+            gateIds: [],
+            totalSlots: 0,
+            rateNormal: 0,
+            rateSpecial: 0,
+            open: true,
+          });
+        },
+        onError: (error: any) => {
+          alert(error?.response?.data?.message || "Failed to create zone");
+          setIsSubmitting(false);
+        },
+      });
+    } else if (showEditModal && selectedZone) {
+      updateZone(
+        { id: selectedZone.id, data: formData },
+        {
+          onSuccess: () => {
+            setShowEditModal(false);
+            setIsSubmitting(false);
+            setSelectedZone(null);
+          },
+          onError: (error: any) => {
+            alert(error?.response?.data?.message || "Failed to update zone");
+            setIsSubmitting(false);
+          },
+        }
+      );
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    if (!selectedZone) return;
+
+    setIsSubmitting(true);
+    deleteZone(selectedZone.id, {
+      onSuccess: () => {
+        setShowDeleteModal(false);
+        setIsSubmitting(false);
+        setSelectedZone(null);
+      },
+      onError: (error: any) => {
+        alert(error?.response?.data?.message || "Failed to delete zone");
+        setIsSubmitting(false);
+      },
+    });
+  };
+
+  const handleCloseModal = () => {
+    setShowCreateModal(false);
+    setShowEditModal(false);
+    setShowDeleteModal(false);
+    setSelectedZone(null);
+    setIsSubmitting(false);
   };
 
   const getCategoryName = (categoryId: string) => {
@@ -333,7 +454,7 @@ export default function ZonesPage() {
     <ErrorBoundary>
       <MainLayout title="Zones - ParkFlow">
         <div className="min-h-screen bg-gray-50">
-          <div className="max-w-7xl mx-auto p-6">
+          <div className=" mx-auto ">
             {/* Header */}
             <div className="mb-8">
               <div className="flex items-center justify-between">
@@ -928,6 +1049,252 @@ export default function ZonesPage() {
             )}
           </div>
         </div>
+
+        {/* Create/Edit Zone Modal */}
+        {(showCreateModal || showEditModal) && (
+          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between p-6 border-b">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  {showCreateModal ? "Create New Zone" : "Edit Zone"}
+                </h2>
+                <button
+                  onClick={handleCloseModal}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="p-6 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Zone Name *
+                    </label>
+                    <Input
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                      placeholder="Enter zone name"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Category *
+                    </label>
+                    <select
+                      value={formData.categoryId}
+                      onChange={(e) =>
+                        setFormData({ ...formData, categoryId: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                      disabled={isSubmitting}
+                    >
+                      <option value="">Select a category</option>
+                      {categories?.map((category) => (
+                        <option
+                          key={category.id}
+                          value={category.id}
+                          className="text-gray-900"
+                        >
+                          {category.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Total Slots *
+                    </label>
+                    <Input
+                      type="number"
+                      value={formData.totalSlots}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          totalSlots: parseInt(e.target.value) || 0,
+                        })
+                      }
+                      placeholder="Enter total slots"
+                      disabled={isSubmitting}
+                      min="1"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Normal Rate ($/hour) *
+                    </label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={formData.rateNormal}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          rateNormal: parseFloat(e.target.value) || 0,
+                        })
+                      }
+                      placeholder="Enter normal rate"
+                      disabled={isSubmitting}
+                      min="0"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Special Rate ($/hour) *
+                    </label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={formData.rateSpecial}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          rateSpecial: parseFloat(e.target.value) || 0,
+                        })
+                      }
+                      placeholder="Enter special rate"
+                      disabled={isSubmitting}
+                      min="0"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Zone Status
+                    </label>
+                    <select
+                      value={formData.open ? "open" : "closed"}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          open: e.target.value === "open",
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                      disabled={isSubmitting}
+                    >
+                      <option value="open" className="text-gray-900">
+                        Open
+                      </option>
+                      <option value="closed" className="text-gray-900">
+                        Closed
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end space-x-4 p-6 border-t bg-gray-50">
+                <Button
+                  onClick={handleCloseModal}
+                  variant="outline"
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSubmitForm}
+                  disabled={isSubmitting}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  {isSubmitting ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <span>
+                        {showCreateModal ? "Creating..." : "Updating..."}
+                      </span>
+                    </div>
+                  ) : showCreateModal ? (
+                    "Create Zone"
+                  ) : (
+                    "Update Zone"
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && selectedZone && (
+          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+              <div className="flex items-center justify-between p-6 border-b">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Delete Zone
+                </h2>
+                <button
+                  onClick={handleCloseModal}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="p-6">
+                <div className="flex items-center mb-4">
+                  <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                    <AlertCircle className="h-6 w-6 text-red-600" />
+                  </div>
+                  <div className="ml-4">
+                    <h3 className="text-lg font-medium text-gray-900">
+                      Confirm Delete
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      This action cannot be undone.
+                    </p>
+                  </div>
+                </div>
+                <p className="text-gray-700 mb-4">
+                  Are you sure you want to delete the zone "{selectedZone.name}
+                  "? This will permanently remove the zone and all associated
+                  data.
+                </p>
+                {selectedZone.occupied > 0 && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3 mb-4">
+                    <p className="text-sm text-yellow-800">
+                      ⚠️ Warning: This zone currently has{" "}
+                      {selectedZone.occupied} occupied slots. Deleting it may
+                      affect active parking sessions.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center justify-end space-x-4 p-6 border-t bg-gray-50">
+                <Button
+                  onClick={handleCloseModal}
+                  variant="outline"
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleConfirmDelete}
+                  disabled={isSubmitting}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  {isSubmitting ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <span>Deleting...</span>
+                    </div>
+                  ) : (
+                    "Delete Zone"
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </MainLayout>
     </ErrorBoundary>
   );

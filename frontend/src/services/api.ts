@@ -1,18 +1,29 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_BASE_URL = 'http://localhost:3000/api/v1';
+// Dynamically determine backend URL based on current host
+const getBackendUrl = () => {
+  if (typeof window !== "undefined") {
+    const hostname = window.location.hostname;
+    if (hostname === "192.168.1.3") {
+      return "http://192.168.1.3:3000/api/v1";
+    }
+  }
+  return "http://localhost:3000/api/v1";
+};
+
+const API_BASE_URL = getBackendUrl();
 
 // Create axios instance
 export const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 // Add auth token to requests
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem("authToken");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -24,8 +35,8 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('authToken');
-      window.location.href = '/login';
+      localStorage.removeItem("authToken");
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   }
@@ -35,7 +46,7 @@ api.interceptors.response.use(
 export interface User {
   id: string;
   username: string;
-  role: 'admin' | 'employee';
+  role: "admin" | "employee";
   name?: string;
   email?: string;
 }
@@ -109,7 +120,7 @@ export interface Subscription {
 
 export interface Ticket {
   id: string;
-  type: 'visitor' | 'subscriber';
+  type: "visitor" | "subscriber";
   zoneId: string;
   gateId: string;
   checkinAt: string;
@@ -120,7 +131,7 @@ export interface Ticket {
 export interface CheckinRequest {
   gateId: string;
   zoneId: string;
-  type: 'visitor' | 'subscriber';
+  type: "visitor" | "subscriber";
   subscriptionId?: string;
 }
 
@@ -138,7 +149,7 @@ export interface BreakdownItem {
   from: string;
   to: string;
   hours: number;
-  rateMode: 'normal' | 'special';
+  rateMode: "normal" | "special";
   rate: number;
   amount: number;
 }
@@ -155,8 +166,13 @@ export interface CheckoutResponse {
 
 export interface AdminUpdate {
   adminId: string;
-  action: 'category-rates-changed' | 'zone-closed' | 'zone-opened' | 'vacation-added' | 'rush-updated';
-  targetType: 'category' | 'zone' | 'vacation' | 'rush';
+  action:
+    | "category-rates-changed"
+    | "zone-closed"
+    | "zone-opened"
+    | "vacation-added"
+    | "rush-updated";
+  targetType: "category" | "zone" | "vacation" | "rush";
   targetId: string;
   details?: any;
   timestamp: string;
@@ -165,7 +181,7 @@ export interface AdminUpdate {
 // Auth API
 export const authApi = {
   login: async (credentials: { username: string; password: string }) => {
-    const response = await api.post('/auth/login', credentials);
+    const response = await api.post("/auth/login", credentials);
     return response.data;
   },
 };
@@ -173,17 +189,17 @@ export const authApi = {
 // Master Data API
 export const masterApi = {
   getGates: async (): Promise<Gate[]> => {
-    const response = await api.get('/master/gates');
+    const response = await api.get("/master/gates");
     return response.data;
   },
-  
+
   getZones: async (gateId: string): Promise<Zone[]> => {
     const response = await api.get(`/master/zones?gateId=${gateId}`);
     return response.data;
   },
-  
+
   getCategories: async (): Promise<Category[]> => {
-    const response = await api.get('/master/categories');
+    const response = await api.get("/master/categories");
     return response.data;
   },
 };
@@ -192,145 +208,173 @@ export const masterApi = {
 export const adminApi = {
   // Categories
   getCategories: async (): Promise<Category[]> => {
-    const response = await api.get('/admin/categories');
+    const response = await api.get("/admin/categories");
     return response.data;
   },
-  
-  createCategory: async (category: Omit<Category, 'id'>): Promise<Category> => {
-    const response = await api.post('/admin/categories', category);
+
+  createCategory: async (category: Omit<Category, "id">): Promise<Category> => {
+    const response = await api.post("/admin/categories", category);
     return response.data;
   },
-  
-  updateCategory: async (id: string, category: Partial<Category>): Promise<Category> => {
+
+  updateCategory: async (
+    id: string,
+    category: Partial<Category>
+  ): Promise<Category> => {
     const response = await api.put(`/admin/categories/${id}`, category);
     return response.data;
   },
-  
+
   deleteCategory: async (id: string): Promise<void> => {
     await api.delete(`/admin/categories/${id}`);
   },
-  
+
   // Zones
   getZones: async (): Promise<Zone[]> => {
-    const response = await api.get('/admin/zones');
+    const response = await api.get("/admin/zones");
     return response.data;
   },
-  
-  createZone: async (zone: Omit<Zone, 'id' | 'occupied' | 'free' | 'reserved' | 'availableForVisitors' | 'availableForSubscribers'>): Promise<Zone> => {
-    const response = await api.post('/admin/zones', zone);
+
+  createZone: async (
+    zone: Omit<
+      Zone,
+      | "id"
+      | "occupied"
+      | "free"
+      | "reserved"
+      | "availableForVisitors"
+      | "availableForSubscribers"
+    >
+  ): Promise<Zone> => {
+    const response = await api.post("/admin/zones", zone);
     return response.data;
   },
-  
+
   updateZone: async (id: string, zone: Partial<Zone>): Promise<Zone> => {
     const response = await api.put(`/admin/zones/${id}`, zone);
     return response.data;
   },
-  
+
   updateZoneOpen: async (id: string, open: boolean): Promise<Zone> => {
     const response = await api.put(`/admin/zones/${id}/open`, { open });
     return response.data;
   },
-  
+
   deleteZone: async (id: string): Promise<void> => {
     await api.delete(`/admin/zones/${id}`);
   },
-  
+
   // Gates
   getGates: async (): Promise<Gate[]> => {
-    const response = await api.get('/admin/gates');
+    const response = await api.get("/admin/gates");
     return response.data;
   },
-  
-  createGate: async (gate: Omit<Gate, 'id'>): Promise<Gate> => {
-    const response = await api.post('/admin/gates', gate);
-    return response.data;
+
+  createGate: async (_gate: Omit<Gate, "id">): Promise<Gate> => {
+    throw new Error(
+      "Gate creation is not available in the current backend configuration. Please contact your system administrator to enable this feature."
+    );
   },
-  
-  updateGate: async (id: string, gate: Partial<Gate>): Promise<Gate> => {
-    const response = await api.put(`/admin/gates/${id}`, gate);
-    return response.data;
+
+  updateGate: async (_id: string, _gate: Partial<Gate>): Promise<Gate> => {
+    throw new Error(
+      "Gate editing is not available in the current backend configuration. Please contact your system administrator to enable this feature."
+    );
   },
-  
-  deleteGate: async (id: string): Promise<void> => {
-    await api.delete(`/admin/gates/${id}`);
+
+  deleteGate: async (_id: string): Promise<void> => {
+    throw new Error(
+      "Gate deletion is not available in the current backend configuration. Please contact your system administrator to enable this feature."
+    );
   },
-  
+
   // Rush Hours
   getRushHours: async (): Promise<RushHour[]> => {
-    const response = await api.get('/admin/rush-hours');
+    const response = await api.get("/admin/rush-hours");
     return response.data;
   },
-  
-  createRushHour: async (rushHour: Omit<RushHour, 'id'>): Promise<RushHour> => {
-    const response = await api.post('/admin/rush-hours', rushHour);
+
+  createRushHour: async (rushHour: Omit<RushHour, "id">): Promise<RushHour> => {
+    const response = await api.post("/admin/rush-hours", rushHour);
     return response.data;
   },
-  
-  updateRushHour: async (id: string, rushHour: Partial<RushHour>): Promise<RushHour> => {
+
+  updateRushHour: async (
+    id: string,
+    rushHour: Partial<RushHour>
+  ): Promise<RushHour> => {
     const response = await api.put(`/admin/rush-hours/${id}`, rushHour);
     return response.data;
   },
-  
+
   deleteRushHour: async (id: string): Promise<void> => {
     await api.delete(`/admin/rush-hours/${id}`);
   },
-  
+
   // Vacations
   getVacations: async (): Promise<Vacation[]> => {
-    const response = await api.get('/admin/vacations');
+    const response = await api.get("/admin/vacations");
     return response.data;
   },
-  
-  createVacation: async (vacation: Omit<Vacation, 'id'>): Promise<Vacation> => {
-    const response = await api.post('/admin/vacations', vacation);
+
+  createVacation: async (vacation: Omit<Vacation, "id">): Promise<Vacation> => {
+    const response = await api.post("/admin/vacations", vacation);
     return response.data;
   },
-  
-  updateVacation: async (id: string, vacation: Partial<Vacation>): Promise<Vacation> => {
+
+  updateVacation: async (
+    id: string,
+    vacation: Partial<Vacation>
+  ): Promise<Vacation> => {
     const response = await api.put(`/admin/vacations/${id}`, vacation);
     return response.data;
   },
-  
+
   deleteVacation: async (id: string): Promise<void> => {
     await api.delete(`/admin/vacations/${id}`);
   },
-  
+
   // Users
   getUsers: async (): Promise<User[]> => {
-    const response = await api.get('/admin/users');
+    const response = await api.get("/admin/users");
     return response.data;
   },
-  
-  createUser: async (user: Omit<User, 'id'>): Promise<User> => {
-    const response = await api.post('/admin/users', user);
+
+  createUser: async (user: Omit<User, "id">): Promise<User> => {
+    const response = await api.post("/admin/users", user);
     return response.data;
   },
-  
+
   // Subscriptions
   getSubscriptions: async (): Promise<Subscription[]> => {
-    const response = await api.get('/admin/subscriptions');
+    const response = await api.get("/admin/subscriptions");
     return response.data;
   },
-  
-  createSubscription: async (subscription: Omit<Subscription, 'id' | 'currentCheckins'>): Promise<Subscription> => {
-    const response = await api.post('/admin/subscriptions', subscription);
+
+  createSubscription: async (
+    subscription: Omit<Subscription, "id" | "currentCheckins">
+  ): Promise<Subscription> => {
+    const response = await api.post("/admin/subscriptions", subscription);
     return response.data;
   },
-  
-  updateSubscription: async (id: string, subscription: Partial<Subscription>): Promise<Subscription> => {
+
+  updateSubscription: async (
+    id: string,
+    subscription: Partial<Subscription>
+  ): Promise<Subscription> => {
     const response = await api.put(`/admin/subscriptions/${id}`, subscription);
     return response.data;
   },
-  
+
   // Reports
   getParkingState: async (): Promise<Zone[]> => {
-    const response = await api.get('/admin/reports/parking-state');
+    const response = await api.get("/admin/reports/parking-state");
     return response.data;
   },
-  
+
   // Tickets
   getTickets: async (status?: string): Promise<Ticket[]> => {
-    const params = status ? `?status=${status}` : '';
+    const params = status ? `?status=${status}` : "";
     const response = await api.get(`/admin/tickets${params}`);
     return response.data;
   },
@@ -347,15 +391,15 @@ export const subscriptionApi = {
 // Ticket API
 export const ticketApi = {
   checkin: async (data: CheckinRequest): Promise<CheckinResponse> => {
-    const response = await api.post('/tickets/checkin', data);
+    const response = await api.post("/tickets/checkin", data);
     return response.data;
   },
-  
+
   checkout: async (data: CheckoutRequest): Promise<CheckoutResponse> => {
-    const response = await api.post('/tickets/checkout', data);
+    const response = await api.post("/tickets/checkout", data);
     return response.data;
   },
-  
+
   getTicket: async (id: string): Promise<Ticket> => {
     const response = await api.get(`/tickets/${id}`);
     return response.data;

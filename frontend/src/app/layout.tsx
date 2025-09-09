@@ -5,6 +5,9 @@ import "@/styles/design-system.css";
 import ReduxProvider from "@/components/providers/ReduxProvider";
 import QueryProvider from "@/components/providers/QueryProvider";
 import PWAProvider from "@/components/providers/PWAProvider";
+import { LoadingProvider } from "@/contexts/LoadingContext";
+import { ApiInterceptorProvider } from "@/components/providers/ApiInterceptorProvider";
+import { NavigationLoadingProvider } from "@/components/providers/NavigationLoadingProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -41,7 +44,13 @@ export default function RootLayout({
       <body className="font-sans">
         <ReduxProvider>
           <QueryProvider>
-            <PWAProvider>{children}</PWAProvider>
+            <LoadingProvider>
+              <ApiInterceptorProvider>
+                <NavigationLoadingProvider>
+                  <PWAProvider>{children}</PWAProvider>
+                </NavigationLoadingProvider>
+              </ApiInterceptorProvider>
+            </LoadingProvider>
           </QueryProvider>
         </ReduxProvider>
       </body>

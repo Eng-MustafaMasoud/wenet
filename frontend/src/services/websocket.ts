@@ -22,6 +22,16 @@ class WebSocketService {
     this.connect();
   }
 
+  private getWebSocketUrl(): string {
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      if (hostname === '192.168.1.3') {
+        return 'ws://192.168.1.3:3000/api/v1/ws';
+      }
+    }
+    return 'ws://localhost:3000/api/v1/ws';
+  }
+
   private connect(): void {
     if (this.isConnecting || (this.ws && this.ws.readyState === WebSocket.OPEN)) {
       return;
@@ -30,7 +40,8 @@ class WebSocketService {
     this.isConnecting = true;
 
     try {
-      this.ws = new WebSocket('ws://localhost:3000/api/v1/ws');
+      const wsUrl = this.getWebSocketUrl();
+      this.ws = new WebSocket(wsUrl);
 
       this.ws.onopen = () => {
         console.log('WebSocket connected');

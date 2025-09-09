@@ -4,14 +4,7 @@ import { useMemo, memo } from "react";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
-import {
-  useParkingState,
-  useAdminZones,
-  useAdminCategories,
-  useTickets,
-  useSubscriptions,
-  useAdminGates,
-} from "@/hooks/useApi";
+import { useGates, useAllZones, useCategories } from "@/hooks/useApi";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import MainLayout from "@/components/layout/MainLayout";
 import Button from "@/components/ui/Button";
@@ -135,15 +128,21 @@ function DashboardPage() {
   // Performance monitoring
   usePerformanceMonitor("DashboardPage");
 
-  // API hooks for dashboard data
-  const { data: parkingState, isLoading: parkingLoading } = useParkingState();
-  const { data: zones, isLoading: zonesLoading } = useAdminZones();
-  const { data: categories, isLoading: categoriesLoading } =
-    useAdminCategories();
-  const { data: tickets, isLoading: ticketsLoading } = useTickets();
-  const { data: subscriptions, isLoading: subscriptionsLoading } =
-    useSubscriptions();
-  const { data: gates, isLoading: gatesLoading } = useAdminGates();
+  // API hooks for dashboard data - using public endpoints
+  const { data: gates, isLoading: gatesLoading } = useGates();
+  const { data: allZones, isLoading: zonesLoading } = useAllZones();
+  const { data: categories, isLoading: categoriesLoading } = useCategories();
+
+  // For now, we'll create mock data for tickets and subscriptions since admin endpoints require auth
+  const tickets: any[] = [];
+  const subscriptions: any[] = [];
+  const ticketsLoading = false;
+  const subscriptionsLoading = false;
+  const parkingLoading = false;
+
+  // Use zones data as parking state since it contains the same info
+  const parkingState = allZones;
+  const zones = allZones;
 
   const isDataLoading =
     parkingLoading ||
@@ -172,22 +171,30 @@ function DashboardPage() {
       };
     }
 
-    const totalSlots = zones.reduce((sum, zone) => sum + zone.totalSlots, 0);
-    const totalOccupied = parkingState.reduce(
-      (sum, zone) => sum + zone.occupied,
+    const totalSlots = zones.reduce(
+      (sum: number, zone: any) => sum + zone.totalSlots,
       0
     );
-    const totalFree = parkingState.reduce((sum, zone) => sum + zone.free, 0);
+    const totalOccupied = parkingState.reduce(
+      (sum: number, zone: any) => sum + zone.occupied,
+      0
+    );
+    const totalFree = parkingState.reduce(
+      (sum: number, zone: any) => sum + zone.free,
+      0
+    );
     const totalReserved = parkingState.reduce(
-      (sum, zone) => sum + zone.reserved,
+      (sum: number, zone: any) => sum + zone.reserved,
       0
     );
     const occupancyRate =
       totalSlots > 0 ? (totalOccupied / totalSlots) * 100 : 0;
     const activeSubscriptions = subscriptions.filter(
-      (sub) => sub.active
+      (sub: any) => sub.active
     ).length;
-    const activeTickets = tickets.filter((ticket) => !ticket.checkoutAt).length;
+    const activeTickets = tickets.filter(
+      (ticket: any) => !ticket.checkoutAt
+    ).length;
     const totalGates = gates.length;
     const totalZones = zones.length;
     const totalCategories = categories?.length || 0;
@@ -200,8 +207,8 @@ function DashboardPage() {
     // Calculate average occupancy rate across zones
     const avgOccupancyRate =
       parkingState.length > 0
-        ? parkingState.reduce((sum, zone) => {
-            const zoneInfo = zones.find((z) => z.id === zone.id);
+        ? parkingState.reduce((sum: number, zone: any) => {
+            const zoneInfo = zones.find((z: any) => z.id === zone.id);
             return (
               sum + (zoneInfo ? (zone.occupied / zoneInfo.totalSlots) * 100 : 0)
             );
@@ -229,13 +236,15 @@ function DashboardPage() {
     if (!zones || !parkingState) return [];
 
     return zones
-      .map((zone) => {
-        const state = parkingState.find((s) => s.id === zone.id);
+      .map((zone: any) => {
+        const state = parkingState.find((s: any) => s.id === zone.id);
         if (!state) return null;
 
         const occupancyRate =
           zone.totalSlots > 0 ? (state.occupied / zone.totalSlots) * 100 : 0;
-        const category = categories?.find((cat) => cat.id === zone.categoryId);
+        const category = categories?.find(
+          (cat: any) => cat.id === zone.categoryId
+        );
 
         return {
           name: zone.name,
@@ -260,12 +269,12 @@ function DashboardPage() {
     if (!parkingState) return [];
 
     const available = parkingState.filter(
-      (z) => z.open && z.availableForVisitors > 0
+      (z: any) => z.open && z.availableForVisitors > 0
     ).length;
     const full = parkingState.filter(
-      (z) => z.open && z.availableForVisitors === 0
+      (z: any) => z.open && z.availableForVisitors === 0
     ).length;
-    const closed = parkingState.filter((z) => !z.open).length;
+    const closed = parkingState.filter((z: any) => !z.open).length;
 
     return [
       { name: "Available", value: available, color: "#10B981" },
