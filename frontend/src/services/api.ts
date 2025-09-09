@@ -11,7 +11,8 @@ const getBackendUrl = () => {
   return "http://localhost:3000/api/v1";
 };
 
-const API_BASE_URL = getBackendUrl();
+// Use a consistent default for SSR, then update on client
+const API_BASE_URL = "http://localhost:3000/api/v1";
 
 // Create axios instance
 export const api = axios.create({
@@ -21,8 +22,19 @@ export const api = axios.create({
   },
 });
 
-// Add auth token to requests
+// Add auth token to requests and update base URL on client
 api.interceptors.request.use((config) => {
+  // Update base URL on client side if needed
+  if (
+    typeof window !== "undefined" &&
+    config.baseURL === "http://localhost:3000/api/v1"
+  ) {
+    const dynamicUrl = getBackendUrl();
+    if (dynamicUrl !== config.baseURL) {
+      config.baseURL = dynamicUrl;
+    }
+  }
+
   const token = localStorage.getItem("authToken");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;

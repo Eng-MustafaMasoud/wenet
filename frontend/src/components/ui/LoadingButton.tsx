@@ -29,7 +29,9 @@ const LoadingButton = forwardRef<HTMLButtonElement, LoadingButtonProps>(
 
     const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
       if (asyncOnClick) {
-        await execute(asyncOnClick, loadingMessage);
+        await execute(asyncOnClick, {
+          loadingMessage,
+        });
       } else if (onClick) {
         onClick(event);
       }

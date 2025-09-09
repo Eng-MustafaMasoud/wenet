@@ -43,6 +43,7 @@ export default function MainLayout({
         title={title}
         showConnectionStatus={showConnectionStatus}
         gateId={gateId}
+        sidebarCollapsed={sidebarCollapsed}
       />
 
       {/* Sidebar */}
@@ -57,8 +58,8 @@ export default function MainLayout({
           "transition-all duration-300 ease-in-out",
           // Desktop: adjust based on sidebar collapsed state
           sidebarCollapsed ? "lg:ml-16" : "lg:ml-64",
-          // Mobile: adjust based on sidebar open state
-          sidebarOpen ? "ml-64" : "ml-0"
+          // Mobile: no sidebar margin (sidebar overlay)
+          "ml-0"
         )}
       >
         <main className="min-h-screen pt-16">

@@ -349,7 +349,7 @@ export default function Sidebar({
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden"
+          className="fixed inset-0 z-30 bg-gray-600 bg-opacity-75 lg:hidden"
           onClick={() => dispatch(setSidebarOpen(false))}
         />
       )}
@@ -357,7 +357,7 @@ export default function Sidebar({
       {/* Sidebar */}
       <div
         className={classNames(
-          "fixed inset-y-0 left-0 z-50 bg-white shadow-xl transform transition-all duration-300 ease-in-out",
+          "fixed inset-y-0 left-0 z-40 bg-white shadow-xl transform transition-all duration-300 ease-in-out",
           // Mobile: show/hide based on sidebarOpen
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
           // Desktop: always visible, adjust width based on collapsed state
@@ -365,45 +365,35 @@ export default function Sidebar({
           isCollapsed ? "w-16" : "w-64"
         )}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
+        {/* Sidebar Header - smaller since navbar is fixed at top */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
           {!isCollapsed && (
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <Car className="w-5 h-5 text-white" />
+              <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded flex items-center justify-center">
+                <Car className="w-4 h-4 text-white" />
               </div>
-              <span className="text-lg font-bold text-gray-900">ParkFlow</span>
+              <span className="text-sm font-semibold text-gray-900">Menu</span>
             </div>
           )}
 
           {isCollapsed && (
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mx-auto">
-              <Car className="w-5 h-5 text-white" />
+            <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded flex items-center justify-center mx-auto">
+              <Car className="w-4 h-4 text-white" />
             </div>
           )}
 
-          <div className="flex items-center space-x-2">
-            {/* Collapse toggle - only on desktop */}
-            <button
-              onClick={onToggleCollapse}
-              className="hidden lg:flex p-2 bg-gray-100 rounded-full text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-colors"
-              title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            >
-              {isCollapsed ? (
-                <ChevronRight className="h-4 w-4" />
-              ) : (
-                <ChevronLeft className="h-4 w-4" />
-              )}
-            </button>
-
-            {/* Close button - only on mobile */}
-            <button
-              onClick={() => dispatch(setSidebarOpen(false))}
-              className="lg:hidden p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+          {/* Collapse toggle - only on desktop */}
+          <button
+            onClick={onToggleCollapse}
+            className="hidden lg:flex p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+            title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {isCollapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
+          </button>
         </div>
 
         {/* User Info - only show when not collapsed */}

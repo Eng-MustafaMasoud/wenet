@@ -10,7 +10,7 @@ import { useLoading } from "@/contexts/LoadingContext";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 
-// Enhanced mutation hook that shows global loading
+// Enhanced mutation hook with comprehensive loading states
 export const useLoadingMutation = <
   TData = unknown,
   TError = unknown,
@@ -19,10 +19,14 @@ export const useLoadingMutation = <
 >(
   options: UseMutationOptions<TData, TError, TVariables, TContext> & {
     loadingMessage?: string;
+    showGlobalLoading?: boolean;
+    showProgress?: boolean;
+    successMessage?: string;
+    onSuccessCallback?: (data: TData) => void;
+    onErrorCallback?: (error: TError) => void;
   }
 ) => {
-  const { withLoading } = useLoading();
-
+  const { withLoading, showSuccess } = useLoading();
   const originalMutationFn = options.mutationFn;
 
   const enhancedMutationFn = useCallback(
@@ -31,12 +35,29 @@ export const useLoadingMutation = <
         throw new Error("mutationFn is required");
       }
 
-      return withLoading(
-        originalMutationFn(variables),
-        options.loadingMessage || "Processing..."
-      );
+      if (options.showGlobalLoading !== false) {
+        return withLoading(originalMutationFn(variables), {
+          message: options.loadingMessage || "Processing...",
+          showProgress: options.showProgress,
+          onSuccess: (result: TData) => {
+            if (options.successMessage) {
+              showSuccess(options.successMessage);
+            }
+            if (options.onSuccessCallback) {
+              options.onSuccessCallback(result);
+            }
+          },
+          onError: (error: Error) => {
+            if (options.onErrorCallback) {
+              options.onErrorCallback(error as TError);
+            }
+          },
+        });
+      }
+
+      return originalMutationFn(variables);
     },
-    [originalMutationFn, withLoading, options.loadingMessage]
+    [originalMutationFn, withLoading, showSuccess, options]
   );
 
   return useMutation({
@@ -45,7 +66,7 @@ export const useLoadingMutation = <
   });
 };
 
-// Enhanced query hook that shows loading for longer operations
+// Enhanced query hook with loading states
 export const useLoadingQuery = <
   TQueryFnData = unknown,
   TError = unknown,
@@ -58,7 +79,6 @@ export const useLoadingQuery = <
   }
 ) => {
   const { withLoading } = useLoading();
-
   const originalQueryFn = options.queryFn;
 
   const enhancedQueryFn = useCallback(
@@ -68,10 +88,9 @@ export const useLoadingQuery = <
       }
 
       if (options.showGlobalLoading) {
-        return withLoading(
-          Promise.resolve(originalQueryFn(context)),
-          options.loadingMessage || "Loading..."
-        );
+        return withLoading(Promise.resolve(originalQueryFn(context)), {
+          message: options.loadingMessage || "Loading...",
+        });
       }
 
       return Promise.resolve(originalQueryFn(context));
@@ -90,47 +109,47 @@ export const useLoadingQuery = <
   });
 };
 
-// Hook for navigation with loading
+// Enhanced navigation with loading states
 export const useLoadingRouter = () => {
   const router = useRouter();
-  const { withLoading } = useLoading();
+  const { showLoading, hideLoading } = useLoading();
 
   const push = useCallback(
     async (href: string, options?: any) => {
-      await withLoading(
-        new Promise<void>((resolve) => {
-          router.push(href, options);
-          // Give some time for navigation to start
-          setTimeout(resolve, 100);
-        }),
-        "Navigating..."
-      );
+      showLoading("Navigating...");
+      try {
+        router.push(href, options);
+        // Navigation is handled by NavigationLoadingProvider
+      } catch (error) {
+        hideLoading();
+        throw error;
+      }
     },
-    [router, withLoading]
+    [router, showLoading, hideLoading]
   );
 
   const replace = useCallback(
     async (href: string, options?: any) => {
-      await withLoading(
-        new Promise<void>((resolve) => {
-          router.replace(href, options);
-          setTimeout(resolve, 100);
-        }),
-        "Navigating..."
-      );
+      showLoading("Navigating...");
+      try {
+        router.replace(href, options);
+      } catch (error) {
+        hideLoading();
+        throw error;
+      }
     },
-    [router, withLoading]
+    [router, showLoading, hideLoading]
   );
 
-  const back = useCallback(async () => {
-    await withLoading(
-      new Promise<void>((resolve) => {
-        router.back();
-        setTimeout(resolve, 100);
-      }),
-      "Going back..."
-    );
-  }, [router, withLoading]);
+  const back = useCallback(() => {
+    showLoading("Going back...");
+    try {
+      router.back();
+    } catch (error) {
+      hideLoading();
+      throw error;
+    }
+  }, [router, showLoading, hideLoading]);
 
   return {
     push,
@@ -141,19 +160,154 @@ export const useLoadingRouter = () => {
   };
 };
 
-// Hook for any async operation with loading
+// Hook for any async operation with comprehensive loading states
 export const useAsyncOperation = () => {
-  const { withLoading } = useLoading();
+  const { withLoading, showError, showSuccess } = useLoading();
 
   const execute = useCallback(
     async <T>(
       operation: () => Promise<T>,
-      loadingMessage = "Processing..."
+      options: {
+        loadingMessage?: string;
+        successMessage?: string;
+        showProgress?: boolean;
+        onSuccess?: (result: T) => void;
+        onError?: (error: Error) => void;
+        retryFn?: () => void;
+      } = {}
     ): Promise<T> => {
-      return withLoading(operation(), loadingMessage);
+      const {
+        loadingMessage = "Processing...",
+        successMessage,
+        showProgress,
+        onSuccess,
+        onError,
+        retryFn,
+      } = options;
+
+      try {
+        const result = await withLoading(operation(), {
+          message: loadingMessage,
+          showProgress,
+          onSuccess: (result: T) => {
+            if (successMessage) {
+              showSuccess(successMessage);
+            }
+            if (onSuccess) {
+              onSuccess(result);
+            }
+          },
+          onError: (error: Error) => {
+            if (onError) {
+              onError(error);
+            } else {
+              showError(error, retryFn);
+            }
+          },
+        });
+        return result;
+      } catch (error) {
+        // Error is already handled by withLoading
+        throw error;
+      }
     },
-    [withLoading]
+    [withLoading, showError, showSuccess]
   );
 
-  return { execute };
+  const executeWithRetry = useCallback(
+    async <T>(
+      operation: () => Promise<T>,
+      options: {
+        loadingMessage?: string;
+        successMessage?: string;
+        maxRetries?: number;
+      } = {}
+    ): Promise<T> => {
+      const { maxRetries = 3, ...otherOptions } = options;
+      let retryCount = 0;
+
+      const attemptOperation = async (): Promise<T> => {
+        try {
+          return await execute(operation, {
+            ...otherOptions,
+            retryFn: retryCount < maxRetries ? attemptOperation : undefined,
+          });
+        } catch (error) {
+          retryCount++;
+          if (retryCount < maxRetries) {
+            // Retry after a short delay
+            await new Promise((resolve) =>
+              setTimeout(resolve, 1000 * retryCount)
+            );
+            return attemptOperation();
+          }
+          throw error;
+        }
+      };
+
+      return attemptOperation();
+    },
+    [execute]
+  );
+
+  return {
+    execute,
+    executeWithRetry,
+  };
+};
+
+// Hook for progress tracking operations
+export const useProgressOperation = () => {
+  const { showLoading, updateProgress, hideLoading, showSuccess, showError } =
+    useLoading();
+
+  const executeWithProgress = useCallback(
+    async <T>(
+      operation: (updateProgress: (progress: number) => void) => Promise<T>,
+      options: {
+        loadingMessage?: string;
+        successMessage?: string;
+        onComplete?: (result: T) => void;
+        onError?: (error: Error) => void;
+      } = {}
+    ): Promise<T> => {
+      const {
+        loadingMessage = "Processing...",
+        successMessage,
+        onComplete,
+        onError,
+      } = options;
+
+      showLoading(loadingMessage, { showProgress: true });
+
+      try {
+        const result = await operation(updateProgress);
+        hideLoading();
+
+        if (successMessage) {
+          showSuccess(successMessage);
+        }
+
+        if (onComplete) {
+          onComplete(result);
+        }
+
+        return result;
+      } catch (error) {
+        hideLoading();
+        const err = error instanceof Error ? error : new Error(String(error));
+
+        if (onError) {
+          onError(err);
+        } else {
+          showError(err);
+        }
+
+        throw error;
+      }
+    },
+    [showLoading, updateProgress, hideLoading, showSuccess, showError]
+  );
+
+  return { executeWithProgress };
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLoading } from "@/contexts/LoadingContext";
 import {
   setupApiInterceptors,
@@ -11,16 +11,22 @@ export const ApiInterceptorProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const { showLoading, hideLoading } = useLoading();
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    // Set up API interceptors with loading context
-    setupApiInterceptors(showLoading, hideLoading);
+    // Only setup interceptors on client side
+    if (typeof window !== "undefined" && !isInitialized) {
+      setupApiInterceptors(showLoading, hideLoading);
+      setIsInitialized(true);
+    }
 
     // Cleanup on unmount
     return () => {
-      cleanupApiInterceptors();
+      if (isInitialized) {
+        cleanupApiInterceptors();
+      }
     };
-  }, [showLoading, hideLoading]);
+  }, [showLoading, hideLoading, isInitialized]);
 
   return <>{children}</>;
 };
