@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
@@ -19,6 +19,11 @@ export default function ProtectedRoute({
 }: ProtectedRouteProps) {
   const router = useRouter();
   const { isAuthenticated, user, isLoading } = useSelector((state: RootState) => state.auth);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -37,7 +42,7 @@ export default function ProtectedRoute({
 
   // Show login form if not authenticated
   if (!isAuthenticated) {
-    return <LoginForm redirectTo={window.location.pathname} />;
+    return <LoginForm redirectTo={isMounted ? window.location.pathname : redirectTo} />;
   }
 
   // Check role if required
