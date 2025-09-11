@@ -526,14 +526,12 @@ export function useTicketPrinter() {
 
   const printTicket = React.useCallback(
     (ticket: TicketData) => {
-      // Create a print window directly without opening the modal
+      // Try to open a print window first
       const printWindow = window.open("", "_blank", "noopener,noreferrer");
-      if (!printWindow) {
-        console.error("Could not open print window");
-        return;
-      }
-
-      const html = `<!doctype html>
+      
+      if (printWindow) {
+        // Successfully opened window - use it for printing
+        const html = `<!doctype html>
 <html>
   <head>
     <meta charset="utf-8" />
@@ -578,9 +576,44 @@ export function useTicketPrinter() {
   </body>
 </html>`;
 
-      printWindow.document.open();
-      printWindow.document.write(html);
-      printWindow.document.close();
+        printWindow.document.open();
+        printWindow.document.write(html);
+        printWindow.document.close();
+      } else {
+        // Popup blocked - fallback to current window printing
+        console.warn("Popup blocked, using fallback print method");
+        
+        // Create a temporary print element
+        const printElement = document.createElement('div');
+        printElement.innerHTML = `
+          <div style="
+            width: 3.5in; 
+            min-height: 5in; 
+            padding: 0.25in; 
+            border: 1px solid #000; 
+            margin: 0 auto;
+            background: white;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+          ">
+            ${getTicketHTML(ticket)}
+          </div>
+        `;
+        
+        // Hide everything else
+        const originalDisplay = document.body.style.display;
+        document.body.style.display = 'none';
+        
+        // Show only the print element
+        document.body.appendChild(printElement);
+        document.body.style.display = 'block';
+        
+        // Print
+        window.print();
+        
+        // Restore original state
+        document.body.removeChild(printElement);
+        document.body.style.display = originalDisplay;
+      }
     },
     []
   );
