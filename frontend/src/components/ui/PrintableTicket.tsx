@@ -355,6 +355,158 @@ function TicketContent({
   );
 }
 
+// Helper function to generate ticket HTML
+function getTicketHTML(ticket: TicketData) {
+  const companyInfo = {
+    name: "ParkFlow Management System",
+    address: "123 Parking Street, City, State 12345",
+    phone: "+1 (555) 123-4567",
+    website: "www.parkflow.com",
+  };
+
+  const getTicketTitle = () => {
+    switch (ticket.type) {
+      case "entry":
+        return "ENTRY TICKET";
+      case "exit":
+        return "EXIT TICKET";
+      case "payment":
+        return "PAYMENT RECEIPT";
+      default:
+        return "PARKING TICKET";
+    }
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount);
+  };
+
+  const formatDateTime = (dateTimeString: string) => {
+    return new Date(dateTimeString).toLocaleString();
+  };
+
+  return `
+    <div class="ticket-content">
+      <!-- Header -->
+      <div class="ticket-header">
+        <div class="ticket-title">${getTicketTitle()}</div>
+        <div class="ticket-subtitle">${companyInfo.name}</div>
+        <div style="font-size: 10px; margin-top: 0.25rem;">
+          ${companyInfo.address}
+        </div>
+        <div style="font-size: 10px;">
+          ${companyInfo.phone} • ${companyInfo.website}
+        </div>
+      </div>
+
+      <!-- Ticket Body -->
+      <div class="ticket-body">
+        <div class="ticket-row">
+          <span>Ticket ID:</span>
+          <span style="font-weight: bold;">${ticket.id}</span>
+        </div>
+
+        <div class="ticket-row">
+          <span>Vehicle:</span>
+          <span>${ticket.vehiclePlate}</span>
+        </div>
+
+        <div class="ticket-row">
+          <span>Type:</span>
+          <span>${ticket.vehicleType}</span>
+        </div>
+
+        <div class="ticket-row">
+          <span>Zone:</span>
+          <span>${ticket.zone}</span>
+        </div>
+
+        <div class="ticket-row">
+          <span>Gate:</span>
+          <span>${ticket.gateName}</span>
+        </div>
+
+        ${ticket.customerName ? `
+        <div class="ticket-row">
+          <span>Customer:</span>
+          <span>${ticket.customerName}</span>
+        </div>
+        ` : ''}
+
+        <div class="ticket-row">
+          <span>Entry Time:</span>
+          <span>${formatDateTime(ticket.entryTime)}</span>
+        </div>
+
+        ${ticket.exitTime ? `
+        <div class="ticket-row">
+          <span>Exit Time:</span>
+          <span>${formatDateTime(ticket.exitTime)}</span>
+        </div>
+        ` : ''}
+
+        ${ticket.duration ? `
+        <div class="ticket-row">
+          <span>Duration:</span>
+          <span>${ticket.duration}</span>
+        </div>
+        ` : ''}
+
+        ${ticket.amount !== undefined ? `
+        <div class="ticket-row" style="font-weight: bold; border-bottom: 2px solid #000;">
+          <span>Amount:</span>
+          <span>${formatCurrency(ticket.amount)}</span>
+        </div>
+        ` : ''}
+
+        ${ticket.paymentMethod ? `
+        <div class="ticket-row">
+          <span>Payment:</span>
+          <span>${ticket.paymentMethod}</span>
+        </div>
+        ` : ''}
+
+        ${ticket.attendant ? `
+        <div class="ticket-row">
+          <span>Attendant:</span>
+          <span>${ticket.attendant}</span>
+        </div>
+        ` : ''}
+      </div>
+
+      <!-- QR Code / Barcode -->
+      ${(ticket.qrCode || ticket.barcode) ? `
+      <div class="ticket-qr">
+        ${ticket.barcode ? `
+        <div class="ticket-barcode" style="margin-bottom: 0.5rem;">
+          ${ticket.barcode}
+        </div>
+        ` : ''}
+        ${ticket.qrCode ? `
+        <div style="font-size: 8px; word-break: break-all; padding: 0.25rem; border: 1px solid #000;">
+          ${ticket.qrCode}
+        </div>
+        ` : ''}
+      </div>
+      ` : ''}
+
+      <!-- Footer -->
+      <div class="ticket-footer">
+        <div>Thank you for using our parking facility!</div>
+        <div style="margin-top: 0.25rem;">
+          Please keep this ticket for your records
+        </div>
+        <div style="margin-top: 0.25rem; font-size: 8px;">
+          Printed on: ${new Date().toLocaleString()}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 // Hook for creating and managing tickets
 export function useTicketPrinter() {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -374,13 +526,63 @@ export function useTicketPrinter() {
 
   const printTicket = React.useCallback(
     (ticket: TicketData) => {
-      openTicket(ticket);
-      // Auto-print after a brief delay to allow modal to open
-      setTimeout(() => {
-        window.print();
-      }, 100);
+      // Create a print window directly without opening the modal
+      const printWindow = window.open("", "_blank", "noopener,noreferrer");
+      if (!printWindow) {
+        console.error("Could not open print window");
+        return;
+      }
+
+      const html = `<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ticket ${ticket.id}</title>
+    <style>
+      @page { size: auto; margin: 10mm; }
+      body { 
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; 
+        margin: 0; 
+        padding: 0;
+        background: white;
+      }
+      .ticket-print { 
+        width: 3.5in; 
+        min-height: 5in; 
+        padding: 0.25in; 
+        border: 1px solid #000; 
+        margin: 0 auto;
+        background: white;
+      }
+      .ticket-title { font-size: 14px; font-weight: 700; text-align: center; margin-bottom: 8px; }
+      .ticket-subtitle { font-size: 12px; text-align: center; margin-bottom: 4px; }
+      .ticket-row { display: flex; justify-content: space-between; font-size: 12px; margin: 2px 0; }
+      .ticket-header { margin-bottom: 12px; }
+      .ticket-body { margin-bottom: 12px; }
+      .ticket-footer { margin-top: 12px; font-size: 10px; text-align: center; }
+      .ticket-barcode { font-family: monospace; font-size: 10px; text-align: center; }
+    </style>
+  </head>
+  <body>
+    <div class="ticket-print">
+      ${getTicketHTML(ticket)}
+    </div>
+    <script>
+      window.focus(); 
+      setTimeout(() => { 
+        window.print(); 
+        setTimeout(() => window.close(), 1000);
+      }, 500);
+    </script>
+  </body>
+</html>`;
+
+      printWindow.document.open();
+      printWindow.document.write(html);
+      printWindow.document.close();
     },
-    [openTicket]
+    []
   );
 
   return {
