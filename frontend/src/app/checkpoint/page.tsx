@@ -9,6 +9,7 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import ClientTime from "@/components/ui/ClientTime";
+import { useTicketPrinter } from "@/components/ui/PrintableTicket";
 import {
   Scan,
   Clock,
@@ -39,6 +40,7 @@ interface CheckoutResult {
 
 export default function CheckpointPage() {
   const { user } = useSelector((state: RootState) => state.auth);
+  const { printTicket, TicketModal } = useTicketPrinter();
 
   const [ticketId, setTicketId] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -140,8 +142,34 @@ export default function CheckpointPage() {
   };
 
   const handlePrint = () => {
-    if (typeof window !== "undefined") {
-      window.print();
+    if (checkoutResult) {
+      // Get vehicle information from subscription data if available
+      let vehiclePlate = "N/A";
+      let vehicleType = "Visitor";
+      
+      if (subscriptionData && subscriptionData.cars && subscriptionData.cars.length > 0) {
+        vehiclePlate = subscriptionData.cars[0].plate || "N/A";
+        vehicleType = "Subscriber";
+      }
+      
+      // Convert checkout result to ticket data format
+      const printableTicketData = {
+        id: checkoutResult.ticketId,
+        type: "exit" as const,
+        vehiclePlate: vehiclePlate,
+        vehicleType: vehicleType,
+        zone: `Zone ${ticketData?.zoneId || "N/A"}`,
+        entryTime: checkoutResult.checkinAt,
+        exitTime: checkoutResult.checkoutAt,
+        duration: `${checkoutResult.durationHours.toFixed(2)} hours`,
+        amount: checkoutResult.amount,
+        paymentMethod: "Cash",
+        gateName: `Gate ${ticketData?.gateId || "N/A"}`,
+        attendant: user?.username || "N/A",
+        barcode: checkoutResult.ticketId,
+      };
+      
+      printTicket(printableTicketData);
     }
   };
 
@@ -467,6 +495,9 @@ export default function CheckpointPage() {
           </div>
         </div>
       </MainLayout>
+      
+      {/* Ticket Print Modal */}
+      {TicketModal}
     </ProtectedRoute>
   );
 }
