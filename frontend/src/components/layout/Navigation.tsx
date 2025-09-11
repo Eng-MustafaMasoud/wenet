@@ -14,9 +14,11 @@ import {
   Wifi,
   WifiOff,
   Settings,
+  Clock,
 } from "lucide-react";
 import { classNames } from "@/utils/helpers";
 import { useWebSocket } from "@/hooks/useWebSocket";
+import ClientTime from "@/components/ui/ClientTime";
 
 // Lazy load components for better performance
 const UserMenu = lazy(() => import("./UserMenu"));
@@ -141,8 +143,14 @@ export default function Navigation({
             </div>
           </div>
 
-          {/* Right side - Notifications, User menu, etc. */}
-          <div className="flex items-center space-x-4">
+          {/* Right side - Time, Notifications, User menu, etc. */}
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            {/* Time display - responsive positioning */}
+            <div className="hidden sm:flex items-center space-x-1 text-sm text-gray-600">
+              <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+              <ClientTime className="font-mono text-xs sm:text-sm" />
+            </div>
+
             {/* Notifications */}
             {isMounted && isAuthenticated && (
               <button
