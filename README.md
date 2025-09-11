@@ -183,9 +183,8 @@ NODE_ENV=development
 | Role | Username | Password | Access Level |
 |------|----------|----------|--------------|
 | Admin | `admin` | `admin123` | Full system access |
-| Employee | `employee1` | `emp123` | Checkpoint operations |
-| Employee | `employee2` | `emp123` | Checkpoint operations |
-
+| Employee | `emp1` | `pass1` | Checkpoint operations |
+sometime is employee role need to remove the space after username ,i havvn't trim the spaces
 ### User Workflows
 
 #### 1. Gate Screen (Visitor Check-in)
@@ -393,7 +392,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [ ] Docker containerization
 
 ---
-
-**Built with ❤️ for WeLink Cargo Company**
-
-*This project demonstrates modern full-stack development practices and serves as a comprehensive example for hiring and training purposes.*
