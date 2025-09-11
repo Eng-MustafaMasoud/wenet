@@ -127,11 +127,16 @@ export default function Navigation({
 
             {/* Title and connection status */}
             <div className="flex items-center ml-4">
-              <h1 className="text-xl font-semibold text-gray-900 truncate">
+              <h1
+                className="hidden sm:block text-xl font-semibold text-gray-900 truncate"
+                suppressHydrationWarning
+              >
                 {title}
               </h1>
               {showConnectionStatus && (
-                <div className="ml-4">{getConnectionStatus()}</div>
+                <div className="ml-4 hidden md:block">
+                  {getConnectionStatus()}
+                </div>
               )}
             </div>
           </div>

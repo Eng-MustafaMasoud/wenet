@@ -42,13 +42,23 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle auth errors
+// Handle auth errors with friendly message and redirect
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem("authToken");
-      window.location.href = "/login";
+    const status = error?.response?.status;
+    if (status === 401 || status === 403) {
+      try {
+        localStorage.removeItem("authToken");
+      } catch {}
+      // Show user-friendly message before redirecting
+      const params = new URLSearchParams({
+        reason: status === 401 ? "unauthorized" : "forbidden",
+      });
+      // Redirect to login with context
+      if (typeof window !== "undefined") {
+        window.location.href = `/login?${params.toString()}`;
+      }
     }
     return Promise.reject(error);
   }

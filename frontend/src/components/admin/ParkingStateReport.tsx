@@ -52,8 +52,11 @@ export default function ParkingStateReport() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {report.map((zone) => (
-          <div key={zone.id} className="bg-white rounded-lg shadow p-6">
+        {report.map((zone, index) => (
+          <div
+            key={`${(zone as any)?.id ?? "zone"}-${index}`}
+            className="bg-white rounded-lg shadow p-6"
+          >
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">

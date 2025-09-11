@@ -8,6 +8,8 @@ import PWAProvider from "@/components/providers/PWAProvider";
 import { LoadingProvider } from "@/contexts/LoadingContext";
 import { ApiInterceptorProvider } from "@/components/providers/ApiInterceptorProvider";
 import { NavigationLoadingProvider } from "@/components/providers/NavigationLoadingProvider";
+import GlobalLoadingProvider from "@/components/providers/LoadingProvider";
+import PageTransition from "@/components/ui/PageTransition";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -45,11 +47,15 @@ export default function RootLayout({
         <ReduxProvider>
           <QueryProvider>
             <LoadingProvider>
-              <ApiInterceptorProvider>
-                <NavigationLoadingProvider>
-                  <PWAProvider>{children}</PWAProvider>
-                </NavigationLoadingProvider>
-              </ApiInterceptorProvider>
+              <GlobalLoadingProvider>
+                <ApiInterceptorProvider>
+                  <NavigationLoadingProvider>
+                    <PWAProvider>
+                      <PageTransition>{children}</PageTransition>
+                    </PWAProvider>
+                  </NavigationLoadingProvider>
+                </ApiInterceptorProvider>
+              </GlobalLoadingProvider>
             </LoadingProvider>
           </QueryProvider>
         </ReduxProvider>

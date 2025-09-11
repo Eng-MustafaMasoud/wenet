@@ -36,7 +36,11 @@ export default function EmployeeLogin({ onSuccess }: EmployeeLoginProps) {
     try {
       await execute(
         async () => {
-          const response = await api.post("/auth/login", values);
+          const payload = {
+            email: values.email.trim(),
+            password: values.password.trim(),
+          };
+          const response = await api.post("/auth/login", payload);
           const { user, token } = response.data;
 
           // Verify employee role
@@ -61,7 +65,7 @@ export default function EmployeeLogin({ onSuccess }: EmployeeLoginProps) {
           },
         }
       );
-    } catch (error) {
+    } catch {
       // Error is handled by execute function
     }
   };

@@ -1,32 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import ParkingStateReport from "./ParkingStateReport";
 import ZoneControl from "./ZoneControl";
 import CategoryManagement from "./CategoryManagement";
-import {
-  BarChart3,
-  Settings,
-  DollarSign,
-  Activity,
-  Clock,
-  Users,
-  AlertCircle,
-} from "lucide-react";
+import { Activity, Clock, AlertCircle } from "lucide-react";
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState("overview");
+  const searchParams = useSearchParams();
+  const activeTab = (searchParams?.get("tab") || "overview").toLowerCase();
   const { connectionState } = useWebSocket();
   const { adminUpdates } = useSelector((state: RootState) => state.admin);
 
-  const tabs = [
-    { id: "overview", name: "Overview", icon: BarChart3 },
-    { id: "zones", name: "Zone Control", icon: Settings },
-    { id: "categories", name: "Categories", icon: DollarSign },
-  ];
+  // Tabs are controlled via Sidebar links (/admin?tab=...)
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -87,28 +76,7 @@ export default function AdminDashboard() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Main Content */}
           <div className="flex-1">
-            {/* Tab Navigation */}
-            <div className="border-b border-gray-200 mb-6">
-              <nav className="-mb-px flex space-x-8">
-                {tabs.map((tab) => {
-                  const Icon = tab.icon;
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
-                        activeTab === tab.id
-                          ? "border-blue-500 text-blue-600"
-                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                      }`}
-                    >
-                      <Icon className="w-4 h-4" />
-                      <span>{tab.name}</span>
-                    </button>
-                  );
-                })}
-              </nav>
-            </div>
+            {/* Navigation handled by sidebar via /admin?tab=... */}
 
             {/* Tab Content */}
             <div className="bg-white rounded-lg shadow">

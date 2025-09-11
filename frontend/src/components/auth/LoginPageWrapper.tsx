@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import LoginForm from "./LoginForm";
 
 export default function LoginPageWrapper() {
   const [isMounted, setIsMounted] = useState(false);
+  const searchParams = useSearchParams();
+  const reason = searchParams?.get("reason");
 
   useEffect(() => {
     setIsMounted(true);
@@ -59,5 +62,27 @@ export default function LoginPageWrapper() {
     );
   }
 
-  return <LoginForm />;
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center py-10 px-4">
+      <div className="w-full max-w-md">
+        {reason && (
+          <div className="mb-4 rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-yellow-800">
+            {reason === "unauthorized" && (
+              <p>
+                Your session has expired or you are not logged in. Please sign
+                in to continue.
+              </p>
+            )}
+            {reason === "forbidden" && (
+              <p>
+                Access denied. Please sign in with an account that has
+                permission to view that page.
+              </p>
+            )}
+          </div>
+        )}
+        <LoginForm />
+      </div>
+    </div>
+  );
 }

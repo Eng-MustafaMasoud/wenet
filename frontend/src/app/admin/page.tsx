@@ -102,75 +102,7 @@ function AdminDashboardContent() {
     rushHoursLoading ||
     vacationsLoading;
 
-  // Navigation tabs
-  const tabs = [
-    {
-      id: "overview",
-      name: "Overview",
-      icon: Home,
-      description: "System overview and key metrics",
-    },
-    {
-      id: "revenue",
-      name: "Revenue",
-      icon: DollarSign,
-      description: "Revenue analytics and reports",
-    },
-    {
-      id: "subscriptions",
-      name: "Subscriptions",
-      icon: Users,
-      description: "Manage user subscriptions",
-    },
-    {
-      id: "monitoring",
-      name: "Monitoring",
-      icon: Activity,
-      description: "Real-time system monitoring",
-    },
-    {
-      id: "zones",
-      name: "Zones",
-      icon: MapPin,
-      description: "Manage parking zones",
-    },
-    {
-      id: "categories",
-      name: "Categories",
-      icon: Tag,
-      description: "Manage zone categories",
-    },
-    {
-      id: "gates",
-      name: "Gates",
-      icon: Car,
-      description: "Manage parking gates",
-    },
-    {
-      id: "employees",
-      name: "Employees",
-      icon: Shield,
-      description: "Manage employees and users",
-    },
-    {
-      id: "parking-state",
-      name: "Parking State",
-      icon: BarChart,
-      description: "Current parking state report",
-    },
-    {
-      id: "rush-hours",
-      name: "Rush Hours",
-      icon: Clock,
-      description: "Manage rush hour pricing",
-    },
-    {
-      id: "vacations",
-      name: "Vacations",
-      icon: TrendingUp,
-      description: "Manage vacation periods",
-    },
-  ];
+  // Navigation is handled by the global Sidebar via /admin?tab=...
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -425,48 +357,17 @@ function AdminDashboardContent() {
               </div>
             </div>
 
-            <div className="flex">
-              {/* Sidebar Navigation */}
-              <div className="w-64 bg-white shadow-sm border-r min-h-screen">
-                <nav className="p-4 space-y-2">
-                  {tabs.map((tab) => {
-                    const Icon = tab.icon;
-                    return (
-                      <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={classNames(
-                          "w-full flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                          activeTab === tab.id
-                            ? "bg-blue-100 text-blue-700 border-r-2 border-blue-700"
-                            : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                        )}
-                      >
-                        <Icon className="h-5 w-5 mr-3" />
-                        <div className="text-left">
-                          <div>{tab.name}</div>
-                          <div className="text-xs text-gray-500">
-                            {tab.description}
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </nav>
-              </div>
-
-              {/* Main Content */}
-              <div className="flex-1 p-6">
-                {isDataLoading ? (
-                  <div className="space-y-6">
-                    <CardSkeleton />
-                    <TableSkeleton />
-                    <CardSkeleton />
-                  </div>
-                ) : (
-                  <div className="space-y-6">{renderTabContent()}</div>
-                )}
-              </div>
+            {/* Main Content only; tabs are in the global Sidebar */}
+            <div className="p-6">
+              {isDataLoading ? (
+                <div className="space-y-6">
+                  <CardSkeleton />
+                  <TableSkeleton />
+                  <CardSkeleton />
+                </div>
+              ) : (
+                <div className="space-y-6">{renderTabContent()}</div>
+              )}
             </div>
           </div>
         </div>
@@ -479,7 +380,7 @@ export default function AdminPage() {
   return (
     <Suspense
       fallback={
-        <MainLayout title="Admin - ParkFlow">
+        <MainLayout title="Admin Dashboard - ParkFlow">
           <div className="min-h-screen bg-gray-50 flex items-center justify-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
           </div>

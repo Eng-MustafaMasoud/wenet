@@ -7,6 +7,7 @@ import Navigation from "./Navigation";
 import Sidebar from "./Sidebar";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import { classNames } from "@/utils/helpers";
+import { motion } from "framer-motion";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -69,7 +70,14 @@ export default function MainLayout({
           </div>
 
           {/* Page Content */}
-          <div className="px-4 sm:px-6 lg:px-8 py-6">{children}</div>
+          <motion.div
+            className="px-4 sm:px-6 lg:px-8 py-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+          >
+            {children}
+          </motion.div>
         </main>
       </div>
     </div>

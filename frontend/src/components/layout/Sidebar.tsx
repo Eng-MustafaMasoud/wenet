@@ -13,7 +13,6 @@ import {
   Settings,
   BarChart3,
   Clock,
-  X,
   Wifi,
   WifiOff,
   User,
@@ -26,6 +25,7 @@ import {
 } from "lucide-react";
 import { classNames } from "@/utils/helpers";
 import { useWebSocket } from "@/hooks/useWebSocket";
+import { useHydration } from "@/hooks/useHydration";
 
 interface NavItem {
   id: string;
@@ -80,28 +80,28 @@ const navigationItems: NavItem[] = [
     label: "Zones",
     href: "/zones",
     icon: MapPin,
-    roles: ["admin", "employee", "visitor"],
+    roles: ["admin", "visitor"],
     children: [
       {
         id: "zones-overview",
         label: "All Zones",
         href: "/zones",
         icon: Home,
-        roles: ["admin", "employee", "visitor"],
+        roles: ["admin", "visitor"],
       },
       {
         id: "zones-availability",
         label: "Availability",
         href: "/zones/availability",
         icon: Activity,
-        roles: ["admin", "employee", "visitor"],
+        roles: ["admin", "visitor"],
       },
       {
         id: "zones-pricing",
         label: "Pricing",
         href: "/zones/pricing",
         icon: DollarSign,
-        roles: ["admin", "employee", "visitor"],
+        roles: ["admin", "visitor"],
       },
     ],
   },
@@ -197,12 +197,7 @@ export default function Sidebar({
   );
   const { connectionState } = useWebSocket();
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
-  const [isMounted, setIsMounted] = useState(false);
-
-  // Handle hydration
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const isHydrated = useHydration();
 
   // Auto-expand current section
   useEffect(() => {
@@ -246,6 +241,8 @@ export default function Sidebar({
 
   const canAccessItem = (item: NavItem) => {
     if (!item.roles) return true;
+    // During SSR, don't filter by role to prevent hydration mismatch
+    if (!isHydrated) return true;
     if (!user) return item.roles.includes("visitor");
     return item.roles.includes(user.role);
   };
@@ -349,7 +346,7 @@ export default function Sidebar({
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-30 bg-gray-600 bg-opacity-75 lg:hidden"
+          className="fixed inset-0 z-30 bg-[0000040] backdrop-blur-sm bg-opacity-75 lg:hidden"
           onClick={() => dispatch(setSidebarOpen(false))}
         />
       )}
@@ -397,7 +394,7 @@ export default function Sidebar({
         </div>
 
         {/* User Info - only show when not collapsed */}
-        {!isCollapsed && isMounted && isAuthenticated && user && (
+        {!isCollapsed && isAuthenticated && user && (
           <div className="p-4 border-b border-gray-200">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center">
@@ -414,10 +411,10 @@ export default function Sidebar({
         )}
 
         {/* Connection Status - only show when not collapsed */}
-        {!isCollapsed && isMounted && (
+        {!isCollapsed && (
           <div className="p-4 border-b border-gray-200">
             <div className="flex items-center space-x-2">
-              {connectionState === "open" ? (
+              {isHydrated && connectionState === "open" ? (
                 <Wifi className="w-4 h-4 text-green-500" />
               ) : (
                 <WifiOff className="w-4 h-4 text-red-500" />
@@ -425,10 +422,14 @@ export default function Sidebar({
               <span
                 className={classNames(
                   "text-xs font-medium",
-                  connectionState === "open" ? "text-green-600" : "text-red-600"
+                  isHydrated && connectionState === "open"
+                    ? "text-green-600"
+                    : "text-red-600"
                 )}
               >
-                {connectionState === "open" ? "Connected" : "Disconnected"}
+                {isHydrated && connectionState === "open"
+                  ? "Connected"
+                  : "Disconnected"}
               </span>
             </div>
           </div>
@@ -440,7 +441,7 @@ export default function Sidebar({
         </nav>
 
         {/* Footer - only show when not collapsed */}
-        {!isCollapsed && isMounted && (
+        {!isCollapsed && (
           <div className="p-4 border-t border-gray-200">
             <div className="flex items-center space-x-2 text-xs text-gray-500">
               <Clock className="w-3 h-3" />

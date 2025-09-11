@@ -27,7 +27,13 @@ function LoginForm({ redirectTo = "/" }: LoginFormProps) {
     { setSubmitting, setFieldError }: any
   ) => {
     try {
-      const response = await loginMutation.mutateAsync(values);
+      // Trim whitespace from credentials
+      const trimmedValues = {
+        username: values.username.trim(),
+        password: values.password.trim(),
+      };
+
+      const response = await loginMutation.mutateAsync(trimmedValues);
       dispatch(loginSuccess(response));
       dispatch(
         addNotification({
@@ -36,12 +42,15 @@ function LoginForm({ redirectTo = "/" }: LoginFormProps) {
         })
       );
 
-      // Redirect based on role
-      if (response.user.role === "admin") {
-        router.push("/admin");
-      } else {
-        router.push("/checkpoint");
-      }
+      // Add smooth transition delay before redirect
+      setTimeout(() => {
+        // Redirect based on role
+        if (response.user.role === "admin") {
+          router.push("/admin");
+        } else {
+          router.push("/checkpoint");
+        }
+      }, 800); // Small delay for smooth transition
     } catch (error: any) {
       const errorMessage =
         error?.response?.data?.message || "Login failed. Please try again.";
@@ -59,7 +68,7 @@ function LoginForm({ redirectTo = "/" }: LoginFormProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4 sm:px-6 lg:px-8 relative">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4 sm:px-6 lg:px-8 relative no-flicker">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="mx-auto h-12 w-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
@@ -82,37 +91,59 @@ function LoginForm({ redirectTo = "/" }: LoginFormProps) {
             <>
               {/* Full Page Loading Overlay */}
               {isSubmitting && (
-                <div className="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
-                  <div className="bg-white rounded-xl shadow-2xl p-8 max-w-sm w-full mx-4">
+                <div className="fixed inset-0 bg-gradient-to-br from-gray-900/60 to-black/70 backdrop-blur-md flex items-center justify-center z-50 transition-all duration-300 ease-out">
+                  <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4 transform scale-100 animate-in slide-in-from-bottom-4 duration-300">
                     <div className="text-center">
-                      <div className="mx-auto h-16 w-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-4">
-                        <svg
-                          className="animate-spin h-8 w-8 text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
+                      <div className="mx-auto h-20 w-20 bg-gradient-to-br from-blue-500 via-purple-500 to-purple-600 rounded-full flex items-center justify-center mb-6 relative overflow-hidden">
+                        {/* Rotating outer ring */}
+                        <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-white/30 border-r-white/20 animate-spin"></div>
+
+                        {/* Inner lock icon with pulse */}
+                        <div className="relative z-10 p-2">
+                          <svg
+                            className="h-8 w-8 text-white animate-pulse"
+                            fill="none"
                             stroke="currentColor"
-                            strokeWidth="4"
-                          />
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          />
-                        </svg>
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            />
+                          </svg>
+                        </div>
+
+                        {/* Shimmer effect */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
                       </div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        Signing you in...
+                      <h3 className="text-xl font-bold text-gray-900 mb-3 animate-pulse">
+                        Authenticating...
                       </h3>
-                      <p className="text-sm text-gray-500">
-                        Please wait while we authenticate your credentials
+                      <p className="text-sm text-gray-600 mb-4">
+                        Verifying your credentials securely
                       </p>
+
+                      {/* Progress dots */}
+                      <div className="flex justify-center space-x-2">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                        <div
+                          className="w-2 h-2 bg-purple-500 rounded-full animate-bounce"
+                          style={{ animationDelay: "0.1s" }}
+                        ></div>
+                        <div
+                          className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
+                          style={{ animationDelay: "0.2s" }}
+                        ></div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -126,7 +157,23 @@ function LoginForm({ redirectTo = "/" }: LoginFormProps) {
                     type="text"
                     required
                     placeholder="Enter your username"
-                  />
+                  >
+                    {({ field }: any) => (
+                      <input
+                        {...field}
+                        type="text"
+                        placeholder="Enter your username"
+                        onBlur={(e) => {
+                          const trimmed = e.target.value.trim();
+                          if (trimmed !== e.target.value) {
+                            e.target.value = trimmed;
+                          }
+                          field.onBlur(e);
+                        }}
+                        className="block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-gray-300 text-gray-900"
+                      />
+                    )}
+                  </FormField>
 
                   <FormField
                     name="password"
@@ -141,6 +188,13 @@ function LoginForm({ redirectTo = "/" }: LoginFormProps) {
                           {...field}
                           type={showPassword ? "text" : "password"}
                           placeholder="Enter your password"
+                          onBlur={(e) => {
+                            const trimmed = e.target.value.trim();
+                            if (trimmed !== e.target.value) {
+                              e.target.value = trimmed;
+                            }
+                            field.onBlur(e);
+                          }}
                           className="block w-full px-3 py-2 pr-10 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-gray-300 text-gray-900"
                         />
                         <button
@@ -171,7 +225,7 @@ function LoginForm({ redirectTo = "/" }: LoginFormProps) {
                     type="submit"
                     variant="primary"
                     size="lg"
-                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 btn-smooth preserve-dimensions disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
@@ -193,7 +247,7 @@ function LoginForm({ redirectTo = "/" }: LoginFormProps) {
                           <path
                             className="opacity-75"
                             fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            d="M4 12a8 8 0 818-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                           />
                         </svg>
                         Signing in...
