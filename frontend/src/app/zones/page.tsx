@@ -80,6 +80,8 @@ export default function ZonesPage() {
   const [statusFilter, setStatusFilter] = useState<
     "all" | "open" | "closed" | "full"
   >("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("");
+  const [occupancyFilter, setOccupancyFilter] = useState<string>("");
 
   // Modal states
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -146,7 +148,30 @@ export default function ZonesPage() {
           zone.open &&
           zone.availableForVisitors === 0);
 
-      return matchesSearch && matchesStatus;
+      const matchesCategory =
+        categoryFilter === "" || zone.categoryId === categoryFilter;
+
+      const matchesOccupancy = (() => {
+        if (occupancyFilter === "") return true;
+        const occupancyRate =
+          zone.totalSlots > 0 ? (zone.occupied / zone.totalSlots) * 100 : 0;
+        switch (occupancyFilter) {
+          case "0-25":
+            return occupancyRate >= 0 && occupancyRate <= 25;
+          case "25-50":
+            return occupancyRate > 25 && occupancyRate <= 50;
+          case "50-75":
+            return occupancyRate > 50 && occupancyRate <= 75;
+          case "75-100":
+            return occupancyRate > 75 && occupancyRate <= 100;
+          default:
+            return true;
+        }
+      })();
+
+      return (
+        matchesSearch && matchesStatus && matchesCategory && matchesOccupancy
+      );
     });
 
     // Sort zones
@@ -168,7 +193,14 @@ export default function ZonesPage() {
     });
 
     return filtered;
-  }, [enrichedZones, searchTerm, statusFilter, sortBy]);
+  }, [
+    enrichedZones,
+    searchTerm,
+    statusFilter,
+    sortBy,
+    categoryFilter,
+    occupancyFilter,
+  ]);
 
   // Calculate zone statistics
   const zoneStats = useMemo(() => {
@@ -702,7 +734,11 @@ export default function ZonesPage() {
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Category
                       </label>
-                      <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white">
+                      <select
+                        value={categoryFilter}
+                        onChange={(e) => setCategoryFilter(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                      >
                         <option value="">All Categories</option>
                         {categories?.map((category) => (
                           <option key={category.id} value={category.id}>
@@ -715,7 +751,11 @@ export default function ZonesPage() {
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Occupancy Range
                       </label>
-                      <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white">
+                      <select
+                        value={occupancyFilter}
+                        onChange={(e) => setOccupancyFilter(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                      >
                         <option value="">Any</option>
                         <option value="0-25">0-25%</option>
                         <option value="25-50">25-50%</option>

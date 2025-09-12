@@ -135,9 +135,11 @@ export default function ZonesPricingPage() {
 
     // Apply filter
     if (filterBy === "normal") {
-      filtered = zones;
+      filtered = zones.filter(
+        (zone) => zone.rateSpecial === 0 || !zone.rateSpecial
+      );
     } else if (filterBy === "special") {
-      filtered = [];
+      filtered = zones.filter((zone) => zone.rateSpecial > 0);
     }
 
     // Apply sort
@@ -146,7 +148,7 @@ export default function ZonesPricingPage() {
         case "normal-rate":
           return b.rateNormal - a.rateNormal;
         case "special-rate":
-          return 0;
+          return b.rateSpecial - a.rateSpecial;
         default:
           return a.name.localeCompare(b.name);
       }
