@@ -286,7 +286,6 @@ npm run type-check   # Run TypeScript compiler
 #### Backend
 ```bash
 npm start            # Start production server
-npm run dev          # Start with nodemon (if available)
 npm test             # Run tests
 npm run test:watch   # Run tests in watch mode
 ```
@@ -338,23 +337,6 @@ npm test                   # Run all tests
 npm run test:watch        # Run tests in watch mode
 ```
 
-### Test Coverage
-- **Backend**: Comprehensive API endpoint testing
-- **Frontend**: Component unit tests and integration tests
-- **E2E**: End-to-end user workflow testing
-
-## 🤝 Contributing
-
-### Development Workflow
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Make your changes
-4. Add tests if applicable
-5. Run tests: `npm test`
-6. Commit changes: `git commit -m 'Add amazing feature'`
-7. Push to branch: `git push origin feature/amazing-feature`
-8. Open a Pull Request
-
 ### Code Standards
 - Follow TypeScript best practices
 - Write meaningful commit messages
@@ -362,33 +344,11 @@ npm run test:watch        # Run tests in watch mode
 - Update documentation as needed
 - Follow the existing code style
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-### Getting Help
-- **Documentation**: Check this README and inline code comments
-- **Issues**: Create an issue in the repository
-- **Discussions**: Use GitHub Discussions for questions
-
 ### Common Solutions
 - **Port Conflicts**: Change ports in environment variables
 - **CORS Issues**: Ensure backend is running and CORS is configured
 - **WebSocket Issues**: Check network connectivity and firewall settings
 - **Build Errors**: Clear node_modules and reinstall dependencies
 
-## 🎯 Future Enhancements
-
-### Planned Features
-- [ ] Database integration (PostgreSQL/MongoDB)
-- [ ] Email/SMS notifications
-- [ ] Advanced reporting and analytics
-- [ ] Mobile app (React Native)
-- [ ] Payment gateway integration
-- [ ] Multi-tenant support
-- [ ] Advanced security features
-- [ ] Docker containerization
 
 ---
