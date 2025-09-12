@@ -1,4 +1,19 @@
 # 🚗 ParkFlow - Complete Parking Management System
+screen shots 
+<img width="2560" height="1612" alt="screencapture-192-168-1-3-5000-dashboard-2025-09-11-23_15_49" src="https://github.com/user-attachments/assets/7304fb41-d36c-46ff-865d-e987482c7dd6" />
+<img width="2560" height="1351" alt="screencapture-192-168-1-3-5000-login-2025-09-11-23_50_33" src="https://github.com/user-attachments/assets/b26eb1c3-586c-4992-bba3-bf8c7a807b4f" />
+<img width="2560" height="1612" alt="screencapture-192-168-1-3-5000-dashboard-2025-09-11-23_15_49" src="https://github.com/user-attachments/assets/8c419fc3-f632-4068-a652-a6672a37a219" />
+<img width="414" height="2185" alt="screencapture-192-168-1-3-5000-dashboard-2025-09-11-23_16_10" src="https://github.com/user-attachments/assets/5f85b503-55e3-4351-8a35-31c93fd848ad" />
+<img width="2560" height="1428" alt="screencapture-192-168-1-3-5000-gates-2025-09-11-23_20_49" src="https://github.com/user-attachments/assets/bede1b13-388f-402c-abde-d4ca52c22b5c" />
+<img width="2560" height="2249" alt="screencapture-192-168-1-3-5000-admin-2025-09-11-23_21_31" src="https://github.com/user-attachments/assets/66fbdaf7-76cd-40ca-8cdf-cc5e1e7ba554" />
+<img width="2560" height="2479" alt="screencapture-192-168-1-3-5000-zones-2025-09-11-23_21_48" src="https://github.com/user-attachments/assets/888dd943-31d2-4a60-b2b0-30628b9aab2f" />
+<img width="2560" height="1428" alt="screencapture-192-168-1-3-5000-admin-2025-09-11-23_22_10" src="https://github.com/user-attachments/assets/85db38c6-11b1-47d0-ba5c-525f9edd3edf" />
+<img width="2560" height="1428" alt="screencapture-192-168-1-3-5000-gate-gate-1-2025-09-11-23_22_52" src="https://github.com/user-attachments/assets/8695c1f0-a56b-4ba9-a6ec-5ab23dfa973f" />
+<img width="2560" height="1722" alt="screencapture-192-168-1-3-5000-checkpoint-2025-09-11-23_23_34" src="https://github.com/user-attachments/assets/32cf1de5-1312-4b0f-94c8-88a2b202eb60" />
+<img width="2560" height="1428" alt="screencapture-192-168-1-3-5000-checkpoint-2025-09-11-23_46_48" src="https://github.com/user-attachments/assets/11568ec4-2160-4f7e-ba8d-6e227f1875d3" />
+<img width="2560" height="1428" alt="screencapture-192-168-1-3-5000-gate-gate-1-2025-09-11-23_48_41" src="https://github.com/user-attachments/assets/c0e98730-1a60-4180-bd4e-9eeca9342d30" />
+<img width="950" height="1145" alt="print ticket" src="https://github.com/user-attachments/assets/1f779246-ec4b-417b-afa0-d329b71c5b92" />
+
 
 A comprehensive, real-time parking reservation and management system built with modern web technologies. This system provides complete functionality for managing parking zones, check-ins, checkouts, and administrative controls with real-time updates and PWA capabilities.
 
@@ -168,9 +183,8 @@ NODE_ENV=development
 | Role | Username | Password | Access Level |
 |------|----------|----------|--------------|
 | Admin | `admin` | `admin123` | Full system access |
-| Employee | `employee1` | `emp123` | Checkpoint operations |
-| Employee | `employee2` | `emp123` | Checkpoint operations |
-
+| Employee | `emp1` | `pass1` | Checkpoint operations |
+sometime is employee role need to remove the space after username ,i havvn't trim the spaces
 ### User Workflows
 
 #### 1. Gate Screen (Visitor Check-in)
@@ -272,7 +286,6 @@ npm run type-check   # Run TypeScript compiler
 #### Backend
 ```bash
 npm start            # Start production server
-npm run dev          # Start with nodemon (if available)
 npm test             # Run tests
 npm run test:watch   # Run tests in watch mode
 ```
@@ -324,23 +337,6 @@ npm test                   # Run all tests
 npm run test:watch        # Run tests in watch mode
 ```
 
-### Test Coverage
-- **Backend**: Comprehensive API endpoint testing
-- **Frontend**: Component unit tests and integration tests
-- **E2E**: End-to-end user workflow testing
-
-## 🤝 Contributing
-
-### Development Workflow
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Make your changes
-4. Add tests if applicable
-5. Run tests: `npm test`
-6. Commit changes: `git commit -m 'Add amazing feature'`
-7. Push to branch: `git push origin feature/amazing-feature`
-8. Open a Pull Request
-
 ### Code Standards
 - Follow TypeScript best practices
 - Write meaningful commit messages
@@ -348,37 +344,11 @@ npm run test:watch        # Run tests in watch mode
 - Update documentation as needed
 - Follow the existing code style
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-### Getting Help
-- **Documentation**: Check this README and inline code comments
-- **Issues**: Create an issue in the repository
-- **Discussions**: Use GitHub Discussions for questions
-
 ### Common Solutions
 - **Port Conflicts**: Change ports in environment variables
 - **CORS Issues**: Ensure backend is running and CORS is configured
 - **WebSocket Issues**: Check network connectivity and firewall settings
 - **Build Errors**: Clear node_modules and reinstall dependencies
 
-## 🎯 Future Enhancements
-
-### Planned Features
-- [ ] Database integration (PostgreSQL/MongoDB)
-- [ ] Email/SMS notifications
-- [ ] Advanced reporting and analytics
-- [ ] Mobile app (React Native)
-- [ ] Payment gateway integration
-- [ ] Multi-tenant support
-- [ ] Advanced security features
-- [ ] Docker containerization
 
 ---
-
-**Built with ❤️ for WeLink Cargo Company**
-
-*This project demonstrates modern full-stack development practices and serves as a comprehensive example for hiring and training purposes.*
