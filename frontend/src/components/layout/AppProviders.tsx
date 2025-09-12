@@ -29,7 +29,9 @@ export default function AppProviders({ children }: AppProvidersProps) {
               maxReconnectAttempts={5}
               heartbeatInterval={30000}
             >
-              <div className="min-h-screen bg-gray-50">{children}</div>
+              <div className="min-h-screen mobile-scroll-fix bg-gray-50 overflow-x-hidden">
+                {children}
+              </div>
             </ConnectionManager>
           </LoadingProvider>
         </NotificationProvider>

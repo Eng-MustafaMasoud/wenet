@@ -155,9 +155,13 @@
 
 html {
   scroll-behavior: smooth;
+  height: 100%;
 }
 
 body {
+  height: 100%;
+  overflow-x: hidden;
+  position: relative;
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     sans-serif;
   line-height: 1.6;
@@ -165,6 +169,13 @@ body {
   background-color: var(--gray-50);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure all content can be scrolled to */
+#__next {
+  min-height: 100dvh;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
 }
 
 /* Typography */
@@ -479,6 +490,23 @@ body {
   color: var(--warning-600);
 }
 
+/* Mobile Viewport Fixes */
+
+/* Fix for mobile viewport height issues */
+@supports (-webkit-touch-callout: none) {
+  .min-h-screen {
+    min-height: -webkit-fill-available;
+  }
+
+  html {
+    height: -webkit-fill-available;
+  }
+
+  body {
+    height: -webkit-fill-available;
+  }
+}
+
 /* Responsive Utilities */
 @media (max-width: 640px) {
   .mobile-hidden {
@@ -487,6 +515,31 @@ body {
 
   .mobile-full {
     width: 100%;
+  }
+
+  /* Ensure content can scroll on mobile */
+  body {
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Fix for iOS Safari viewport issues */
+  .mobile-scroll-fix {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  /* Ensure proper scrolling on mobile */
+  .mobile-scroll-fix {
+    position: relative;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Fix for content not reaching the end */
+  main {
+    min-height: calc(100vh - 4rem); /* Account for header height */
+    padding-bottom: 2rem; /* Add bottom padding */
   }
 }
 

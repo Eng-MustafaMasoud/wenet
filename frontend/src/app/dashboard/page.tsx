@@ -333,7 +333,7 @@ function DashboardPage() {
     return (
       <MainLayout title="Dashboard - ParkFlow">
         <TopProgressBar isLoading={true} />
-        <div className="min-h-screen bg-gray-50">
+        <div className="w-full pb-8">
           <div className="max-w-7xl mx-auto">
             {/* Header Skeleton */}
             <div className="mb-8">
@@ -381,7 +381,7 @@ function DashboardPage() {
     <ErrorBoundary>
       <MainLayout title="Dashboard - ParkFlow">
         <TopProgressBar isLoading={false} />
-        <div className="min-h-screen bg-gray-50">
+        <div className="w-full pb-8">
           <div className="max-w-7xl mx-auto">
             {/* Header */}
             <div className="mb-8">

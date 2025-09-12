@@ -38,7 +38,7 @@ export default function MainLayout({
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen mobile-scroll-fix bg-gray-50">
       {/* Navigation Header */}
       <Navigation
         title={title}
@@ -63,7 +63,7 @@ export default function MainLayout({
           "ml-0"
         )}
       >
-        <main className="min-h-screen pt-16">
+        <main className="pt-16">
           {/* Breadcrumb */}
           <div className="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-3">
             <Breadcrumb />
