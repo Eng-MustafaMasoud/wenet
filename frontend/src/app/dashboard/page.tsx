@@ -10,6 +10,7 @@ import MainLayout from "@/components/layout/MainLayout";
 import Button from "@/components/ui/Button";
 import ClientTime from "@/components/ui/ClientTime";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
+import TopProgressBar from "@/components/ui/TopProgressBar";
 import {
   CardSkeleton,
   ChartSkeleton,
@@ -331,6 +332,7 @@ function DashboardPage() {
   if (authLoading || isDataLoading) {
     return (
       <MainLayout title="Dashboard - ParkFlow">
+        <TopProgressBar isLoading={true} />
         <div className="min-h-screen bg-gray-50">
           <div className="max-w-7xl mx-auto">
             {/* Header Skeleton */}
@@ -378,6 +380,7 @@ function DashboardPage() {
   return (
     <ErrorBoundary>
       <MainLayout title="Dashboard - ParkFlow">
+        <TopProgressBar isLoading={false} />
         <div className="min-h-screen bg-gray-50">
           <div className="max-w-7xl mx-auto">
             {/* Header */}
