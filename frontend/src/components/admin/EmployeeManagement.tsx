@@ -129,10 +129,10 @@ export default function EmployeeManagement() {
         </div>
 
         <Button
-          onClick={() => setShowCreateModal(true)}
+          onClick={() => setShowCreateModal(false)}
           className="bg-blue-600 hover:bg-blue-700 text-white"
         >
-          <Plus className="h-5 w-5 mr-2" />
+          <Plus className="h-5 w-5 mr-2 " />
           Add User
         </Button>
       </div>
