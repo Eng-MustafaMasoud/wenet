@@ -391,7 +391,7 @@ function DashboardPage() {
                     Here's what's happening with your parking system today.
                   </p>
                 </div>
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-4 max-sm:flex-col max-sm:space-y-2">
                   <div
                     className={`flex items-center space-x-2 px-3 py-2 rounded-full text-sm ${
                       connectionState === "open"
