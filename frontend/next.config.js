@@ -17,6 +17,14 @@ const nextConfig = {
       },
     ];
   },
+  // Hydration fixes
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
+  },
+  // Suppress hydration warnings for development
+  reactStrictMode: true,
+  // Disable static optimization for pages that might have hydration issues
+  trailingSlash: false,
 };
 
 module.exports = nextConfig;

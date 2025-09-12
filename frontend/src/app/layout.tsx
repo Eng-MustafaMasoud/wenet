@@ -10,6 +10,7 @@ import { ApiInterceptorProvider } from "@/components/providers/ApiInterceptorPro
 import { NavigationLoadingProvider } from "@/components/providers/NavigationLoadingProvider";
 import GlobalLoadingProvider from "@/components/providers/LoadingProvider";
 import PageTransition from "@/components/ui/PageTransition";
+import ClientOnly from "@/components/ui/ClientOnly";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -43,23 +44,59 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={inter.variable} suppressHydrationWarning={true}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Remove browser extension attributes that cause hydration issues
+              (function() {
+                if (typeof window !== 'undefined') {
+                  const removeExtensionAttributes = () => {
+                    const body = document.body;
+                    if (body) {
+                      // Remove common extension attributes
+                      body.removeAttribute('cz-shortcut-listen');
+                      body.removeAttribute('data-new-gr-c-s-check-loaded');
+                      body.removeAttribute('data-gr-ext-installed');
+                      body.removeAttribute('data-gramm_editor');
+                    }
+                  };
+                  
+                  // Run immediately
+                  removeExtensionAttributes();
+                  
+                  // Run after DOM is ready
+                  if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', removeExtensionAttributes);
+                  }
+                  
+                  // Run after a short delay to catch late-loading extensions
+                  setTimeout(removeExtensionAttributes, 100);
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className="font-sans" suppressHydrationWarning={true}>
-        <ReduxProvider>
-          <QueryProvider>
-            <LoadingProvider>
-              <GlobalLoadingProvider>
-                <ApiInterceptorProvider>
-                  <NavigationLoadingProvider>
-                    <PWAProvider>
-                      <PageTransition>{children}</PageTransition>
-                    </PWAProvider>
-                  </NavigationLoadingProvider>
-                </ApiInterceptorProvider>
-              </GlobalLoadingProvider>
-            </LoadingProvider>
-          </QueryProvider>
-        </ReduxProvider>
+        <ClientOnly>
+          <ReduxProvider>
+            <QueryProvider>
+              <LoadingProvider>
+                <GlobalLoadingProvider>
+                  <ApiInterceptorProvider>
+                    <NavigationLoadingProvider>
+                      <PWAProvider>
+                        <PageTransition>{children}</PageTransition>
+                      </PWAProvider>
+                    </NavigationLoadingProvider>
+                  </ApiInterceptorProvider>
+                </GlobalLoadingProvider>
+              </LoadingProvider>
+            </QueryProvider>
+          </ReduxProvider>
+        </ClientOnly>
       </body>
     </html>
   );
