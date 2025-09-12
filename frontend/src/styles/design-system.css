@@ -525,6 +525,7 @@ body {
 
   /* Fix for iOS Safari viewport issues */
   .mobile-scroll-fix {
+    min-height: 100dvh; /* Dynamic viewport height for mobile */
     min-height: 100vh;
     min-height: -webkit-fill-available;
   }
@@ -538,7 +539,8 @@ body {
 
   /* Fix for content not reaching the end */
   main {
-    min-height: calc(100vh - 4rem); /* Account for header height */
+    min-height: calc(100dvh - 4rem); /* Dynamic viewport height minus header */
+    min-height: calc(100vh - 4rem); /* Fallback for older browsers */
     padding-bottom: 2rem; /* Add bottom padding */
   }
 }

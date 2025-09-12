@@ -77,7 +77,7 @@ export default function LoadingProvider({ children }: LoadingProviderProps) {
   return (
     <>
       {children}
-      <TopProgressBar />
+      <TopProgressBar isLoading={isLoading} />
       <LoadingOverlay
         isLoading={isLoading}
         message={message}

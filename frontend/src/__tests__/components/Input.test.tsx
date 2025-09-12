@@ -38,4 +38,60 @@ describe("Input Component", () => {
     const input = screen.getByRole("textbox");
     expect(input).toHaveClass("border-red-300");
   });
+
+  it("does not show helper text when error is present", () => {
+    render(<Input error="Error message" helperText="Helper text" />);
+    expect(screen.getByText("Error message")).toBeInTheDocument();
+    expect(screen.queryByText("Helper text")).not.toBeInTheDocument();
+  });
+
+  it("applies normal styles when no error", () => {
+    render(<Input />);
+    const input = screen.getByRole("textbox");
+    expect(input).toHaveClass("border-gray-300");
+    expect(input).not.toHaveClass("border-red-300");
+  });
+
+  it("applies custom className", () => {
+    render(<Input className="custom-class" />);
+    const input = screen.getByRole("textbox");
+    expect(input).toHaveClass("custom-class");
+  });
+
+  it("forwards ref correctly", () => {
+    const ref = jest.fn();
+    render(<Input ref={ref} />);
+    expect(ref).toHaveBeenCalled();
+  });
+
+  it("uses provided id or generates one", () => {
+    const { rerender } = render(<Input id="custom-id" />);
+    expect(screen.getByRole("textbox")).toHaveAttribute("id", "custom-id");
+
+    rerender(<Input />);
+    const input = screen.getByRole("textbox");
+    expect(input).toHaveAttribute("id");
+    expect(input.getAttribute("id")).toBeTruthy();
+  });
+
+  it("associates label with input using id", () => {
+    render(<Input id="test-input" label="Test Label" />);
+    const input = screen.getByRole("textbox");
+    const label = screen.getByText("Test Label");
+    expect(input).toHaveAttribute("id", "test-input");
+    expect(label).toHaveAttribute("for", "test-input");
+  });
+
+  it("passes through other props", () => {
+    render(
+      <Input placeholder="Enter text" type="email" data-testid="test-input" />
+    );
+    const input = screen.getByTestId("test-input");
+    expect(input).toHaveAttribute("placeholder", "Enter text");
+    expect(input).toHaveAttribute("type", "email");
+  });
+
+  it("has correct display name", () => {
+    expect(Input.displayName).toBe("Input");
+  });
 });
