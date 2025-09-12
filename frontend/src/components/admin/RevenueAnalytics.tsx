@@ -151,7 +151,7 @@ export default function RevenueAnalytics() {
           <select
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+            className="px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 bg-white"
           >
             <option value="1d">Today</option>
             <option value="7d">Last 7 Days</option>
@@ -160,7 +160,7 @@ export default function RevenueAnalytics() {
           <select
             value={viewType}
             onChange={(e) => setViewType(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+            className="px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 bg-white"
           >
             <option value="revenue">Revenue</option>
             <option value="tickets">Tickets</option>

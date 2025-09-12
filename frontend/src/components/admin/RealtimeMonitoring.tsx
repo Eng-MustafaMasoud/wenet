@@ -228,7 +228,7 @@ export default function RealtimeMonitoring() {
           <select
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+            className="px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 bg-white"
           >
             <option value="1h">Last Hour</option>
             <option value="6h">Last 6 Hours</option>
@@ -492,8 +492,8 @@ export default function RealtimeMonitoring() {
               </div>
             ) : (
               <div className="divide-y divide-gray-200">
-                {alerts.map((alert) => (
-                  <div key={alert.id} className="p-4 hover:bg-gray-50">
+                {alerts.map((alert, index) => (
+                  <div key={alert.id || `alert-${index}`} className="p-4 hover:bg-gray-50">
                     <div className="flex items-start">
                       <div
                         className={`flex-shrink-0 ${
@@ -529,8 +529,8 @@ export default function RealtimeMonitoring() {
           </div>
           <div className="max-h-96 overflow-y-auto">
             <div className="divide-y divide-gray-200">
-              {recentActivity.map((activity) => (
-                <div key={activity.id} className="p-4 hover:bg-gray-50">
+              {recentActivity.map((activity, index) => (
+                <div key={activity.id || `activity-${index}`} className="p-4 hover:bg-gray-50">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
                       <div
@@ -592,8 +592,8 @@ export default function RealtimeMonitoring() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {zoneStatus.map((zone) => (
-                <tr key={zone.id}>
+              {zoneStatus.map((zone, index) => (
+                <tr key={zone.id || `zone-${index}`}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
                       {zone.name}

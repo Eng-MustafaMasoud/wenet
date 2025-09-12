@@ -217,7 +217,7 @@ export default function SubscriptionAnalytics() {
           <select
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+            className="px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 bg-white"
           >
             <option value="7d">Last 7 Days</option>
             <option value="30d">Last 30 Days</option>

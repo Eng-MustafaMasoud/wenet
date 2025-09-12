@@ -354,7 +354,7 @@ export default function Sidebar({
       {/* Sidebar */}
       <div
         className={classNames(
-          "fixed inset-y-0 left-0 z-40 bg-white shadow-xl transform transition-all duration-300 ease-in-out",
+          "fixed inset-y-0 left-0 z-40 bg-white shadow-xl transform transition-all duration-300 ease-in-out flex flex-col",
           // Mobile: show/hide based on sidebarOpen
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
           // Desktop: always visible, adjust width based on collapsed state
@@ -363,7 +363,7 @@ export default function Sidebar({
         )}
       >
         {/* Sidebar Header - smaller since navbar is fixed at top */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+        <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-gray-200">
           {!isCollapsed && (
             <div className="flex items-center space-x-2">
               <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded flex items-center justify-center">
@@ -395,7 +395,7 @@ export default function Sidebar({
 
         {/* User Info - only show when not collapsed */}
         {!isCollapsed && isAuthenticated && user && (
-          <div className="p-4 border-b border-gray-200">
+          <div className="flex-shrink-0 p-4 border-b border-gray-200">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center">
                 <User className="w-5 h-5 text-white" />
@@ -412,7 +412,7 @@ export default function Sidebar({
 
         {/* Connection Status - only show when not collapsed */}
         {!isCollapsed && (
-          <div className="p-4 border-b border-gray-200">
+          <div className="flex-shrink-0 p-4 border-b border-gray-200">
             <div className="flex items-center space-x-2">
               {isHydrated && connectionState === "open" ? (
                 <Wifi className="w-4 h-4 text-green-500" />
@@ -436,13 +436,13 @@ export default function Sidebar({
         )}
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
+        <nav className="flex-1 px-4 py-4 space-y-2 overflow-y-auto min-h-0">
           {navigationItems?.map((item) => renderNavItem(item))}
         </nav>
 
         {/* Footer - only show when not collapsed */}
         {!isCollapsed && (
-          <div className="p-4 border-t border-gray-200">
+          <div className="flex-shrink-0 p-4 border-t border-gray-200">
             <div className="flex items-center space-x-2 text-xs text-gray-500">
               <Clock className="w-3 h-3" />
               <ClientTime />

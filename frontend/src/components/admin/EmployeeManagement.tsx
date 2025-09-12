@@ -285,7 +285,7 @@ export default function EmployeeManagement() {
                 }))
               }
               disabled={isCreating}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
             >
               <option value="employee">Employee</option>
               <option value="admin">Administrator</option>
